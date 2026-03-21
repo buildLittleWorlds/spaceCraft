@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 8: Designing for Your Audience — SpaceCraft</title>
+    <meta name="description" content="How to turn a model demo into a tool people want to use. Titles, examples, output formatting, error states, and accessibility.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-resource: #6ba3d6; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .chapter-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.2rem; font-weight: 600; margin-top: 40px; margin-bottom: 12px; }
+        .article h3 { font-size: 1rem; font-weight: 600; margin-top: 24px; margin-bottom: 8px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 6px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout-green { border-left: 3px solid var(--accent-useful); }
+        .callout-orange { border-left: 3px solid var(--accent-craft); }
+        code { font-family: 'DM Mono', monospace; font-size: 0.84em; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text); }
+        .code-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 20px; margin: 16px 0; overflow-x: auto; font-family: 'DM Mono', monospace; font-size: 0.82rem; line-height: 1.6; color: var(--text-muted); white-space: pre; }
+        .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+        .comparison-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; }
+        .comparison-box h4 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+        .comparison-box.bad h4 { color: var(--accent-craft); }
+        .comparison-box.good h4 { color: var(--accent-useful); }
+        .comparison-box p, .comparison-box code { font-size: 0.82rem; }
+        @media (max-width: 600px) { .comparison { grid-template-columns: 1fr; } }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; }
+        .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+        footer a:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="index.html" class="nav-brand">SpaceCraft</a>
+    <a href="index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="why-cpu.html">1. Why CPU-Only</a>
+    <a href="anatomy.html">2. Anatomy</a>
+    <a href="gpu-vs-cpu.html">3. GPU vs CPU</a>
+    <a href="free-apis.html">4. Free APIs</a>
+    <a href="build.html">5. Build</a>
+    <a href="finding-spaces.html">6. Finding Spaces</a>
+    <a href="pipelines.html">7. Pipelines</a>
+    <a href="design.html" class="active">8. Design</a>
+</nav>
+
+<div class="article">
+    <div class="chapter-label">Chapter 8</div>
+    <h1>Designing for Your Audience</h1>
+    <p class="subtitle">The same model can be a confusing demo or a useful tool. The difference is design.</p>
+
+    <h2>Why Design Matters on Free CPU</h2>
+    <p>When you're building on free CPU, you can't compete on raw model power. You can't run the biggest model or generate the fastest results. What you <em>can</em> compete on is <strong>how your Space feels to use</strong>. A well-designed Space with a small model will always beat a poorly-designed Space with a powerful model.</p>
+    <p>On the <a href="index.html">SpaceCraft leaderboard</a>, every Space is rated on "Craft" &mdash; is the interface well-designed? The highest Craft scores don't go to the most technically complex Spaces. They go to the ones where someone clearly thought about the person using it.</p>
+
+    <h2>Pick One Person</h2>
+    <p>The most common design mistake in student Spaces is building for "everyone." A sentiment analysis tool for everyone is a generic demo. A sentiment analysis tool <strong>for a restaurant owner reading reviews</strong> is a product.</p>
+    <p>Before you write any code, answer these questions:</p>
+    <ol>
+        <li><strong>Who is this for?</strong> One specific type of person. Not "anyone." A teacher. A journalist. A student studying for exams. A podcaster.</li>
+        <li><strong>What are they trying to do?</strong> What task do they need to complete? What question do they need answered?</li>
+        <li><strong>What do they already know?</strong> A machine learning researcher knows what "sentiment" means. A restaurant owner doesn't care about the word "sentiment" &mdash; they care about whether a review is positive or negative.</li>
+    </ol>
+
+    <div class="callout callout-green">
+        <p><strong>The test:</strong> Can you describe your Space in one sentence that your target user would understand? Not "This Space uses DistilBERT for binary sentiment classification." Instead: "Paste a restaurant review and see if it's positive or negative."</p>
+    </div>
+
+    <h2>Titles and Descriptions</h2>
+    <p>Your title and description are the first things anyone sees. They determine whether someone tries your Space or moves on.</p>
+
+    <div class="comparison">
+        <div class="comparison-box bad">
+            <h4>Weak</h4>
+            <p><strong>Title:</strong> "Sentiment Analysis Demo"</p>
+            <p><strong>Description:</strong> "This Space uses the distilbert-base-uncased-finetuned-sst-2-english model for sentiment classification."</p>
+        </div>
+        <div class="comparison-box good">
+            <h4>Strong</h4>
+            <p><strong>Title:</strong> "Review Checker"</p>
+            <p><strong>Description:</strong> "Paste a customer review and see if it's positive or negative. Built for small business owners who want to quickly scan feedback."</p>
+        </div>
+    </div>
+
+    <p>The weak version tells you what the model is. The strong version tells you what the Space <em>does for you</em>. In code:</p>
+    <div class="code-block">demo = gr.Interface(
+    fn=analyze,
+    inputs=gr.Textbox(
+        label="Paste a review",
+        placeholder="e.g. The food was amazing but the service was slow...",
+        lines=3
+    ),
+    outputs=gr.Markdown(label="Verdict"),
+    title="Review Checker",
+    description="Paste a customer review and see if it's positive "
+                "or negative. Built for small business owners."
+)</div>
+
+    <h2>Examples That Teach</h2>
+    <p>Gradio lets you add example inputs that users can click to try instantly. Good examples do three things:</p>
+    <ol>
+        <li><strong>Show the Space works</strong> &mdash; The user clicks, sees a result, and understands the tool immediately.</li>
+        <li><strong>Demonstrate the range</strong> &mdash; Include at least one positive case, one negative case, and one ambiguous case.</li>
+        <li><strong>Match the audience</strong> &mdash; If your Space is for restaurant owners, use restaurant reviews as examples. Not movie reviews, not tweets.</li>
+    </ol>
+
+    <div class="code-block">demo = gr.Interface(
+    fn=analyze,
+    inputs=gr.Textbox(label="Paste a review", lines=3),
+    outputs=gr.Markdown(label="Verdict"),
+    title="Review Checker",
+    examples=[
+        ["The pasta was incredible and the staff was so friendly!"],
+        ["Waited 45 minutes for cold food. Never coming back."],
+        ["It was fine. Nothing special but nothing wrong either."],
+    ]
+)</div>
+
+    <h2>Output Formatting</h2>
+    <p>Raw model output is not human output. The model returns a JSON object with labels and scores. Your user wants a clear answer.</p>
+
+    <div class="comparison">
+        <div class="comparison-box bad">
+            <h4>Raw output</h4>
+            <p><code>[{"label": "POSITIVE", "score": 0.9987}]</code></p>
+        </div>
+        <div class="comparison-box good">
+            <h4>Formatted output</h4>
+            <p><strong>POSITIVE</strong> (99.9% confidence)<br>This review is clearly positive. The language suggests strong satisfaction.</p>
+        </div>
+    </div>
+
+    <p>Format your output for the person using it:</p>
+    <div class="code-block">def format_result(result):
+    label = result["label"]
+    score = round(result["score"] * 100, 1)
+
+    if label == "POSITIVE":
+        emoji = "&#x2705;"
+        interpretation = "This review is positive."
+    else:
+        emoji = "&#x26A0;&#xFE0F;"
+        interpretation = "This review is negative."
+
+    if score > 95:
+        confidence = "Very confident"
+    elif score > 80:
+        confidence = "Fairly confident"
+    else:
+        confidence = "Uncertain"
+
+    return f"{emoji} **{label}** ({score}%)\n\n{confidence}. {interpretation}"</div>
+
+    <h2>Error States</h2>
+    <p>When something goes wrong, your user should know what happened and what to do about it. Never show a Python traceback to a user.</p>
+
+    <div class="comparison">
+        <div class="comparison-box bad">
+            <h4>Bad error</h4>
+            <p><code>IndexError: list index out of range</code></p>
+        </div>
+        <div class="comparison-box good">
+            <h4>Good error</h4>
+            <p>Could not analyze this text. It may be too short or in an unsupported language. Try a longer English sentence.</p>
+        </div>
+    </div>
+
+    <div class="code-block">def analyze(text):
+    if not text or not text.strip():
+        return "Please enter some text to analyze."
+
+    if len(text.strip()) < 10:
+        return "Text is too short for reliable analysis. Try a full sentence."
+
+    try:
+        result = classifier(text)[0]
+        return format_result(result)
+    except Exception:
+        return ("Something went wrong. This can happen with very "
+                "unusual text. Try a different input.")</div>
+
+    <h2>Loading States</h2>
+    <p>On free CPU, models can take a few seconds to respond. If your Space calls an API (<a href="free-apis.html">Chapter 4</a>) or runs a pipeline (<a href="pipelines.html">Chapter 7</a>), the delay may be longer. Gradio shows a loading spinner automatically, but you can improve the experience:</p>
+    <ul>
+        <li><strong>Set expectations in the description:</strong> "Analysis takes 2-3 seconds on free CPU."</li>
+        <li><strong>First load is slowest:</strong> When your Space wakes from sleep (after 48h), the first request loads the model into memory. Warn users: "If the Space was sleeping, first request may take 30 seconds."</li>
+        <li><strong>For pipelines, show progress:</strong> Return intermediate results so the user sees something happening at each step.</li>
+    </ul>
+
+    <h2>Accessibility Basics</h2>
+    <p>Good design means your Space works for everyone who might find it:</p>
+    <ul>
+        <li><strong>Label your inputs.</strong> <code>gr.Textbox(label="Paste a review")</code> is better than <code>gr.Textbox()</code>. Screen readers use labels.</li>
+        <li><strong>Don't rely on color alone.</strong> If you use green/red to show positive/negative, also include the word "POSITIVE" or "NEGATIVE." Some users are colorblind.</li>
+        <li><strong>Write clear placeholder text.</strong> <code>placeholder="e.g. The food was amazing..."</code> tells users exactly what to type.</li>
+        <li><strong>Keep the interface simple.</strong> One input, one output, clear labels. Don't add controls you don't need. Every slider and dropdown is a decision the user has to make.</li>
+    </ul>
+
+    <h2>The Craft Checklist</h2>
+    <p>Before you share your Space, run through this list. These are the things that separate a demo from a tool:</p>
+    <ul>
+        <li>Does the title say what the Space does (not what model it uses)?</li>
+        <li>Does the description name the audience?</li>
+        <li>Are there 2-3 example inputs the user can click?</li>
+        <li>Is the output formatted for a human (not raw JSON)?</li>
+        <li>Does it handle empty input gracefully?</li>
+        <li>Does it handle errors without showing tracebacks?</li>
+        <li>Are all inputs labeled?</li>
+        <li>Would someone who doesn't know ML understand what to do?</li>
+    </ul>
+
+    <div class="callout">
+        <p><strong>Try this:</strong> Share your Space URL with someone who wasn't involved in building it. Don't explain anything. Watch what they do. Do they understand the title? Do they know what to type? Do they understand the output? Every point of confusion is a design opportunity.</p>
+    </div>
+
+    <h2>Design on the Leaderboard</h2>
+    <p>Sort the <a href="index.html">SpaceCraft leaderboard</a> by Craft score. The top-scoring Spaces share common traits:</p>
+    <ul>
+        <li>Clear, specific titles (not "Demo" or "Test")</li>
+        <li>Descriptions that tell you who it's for</li>
+        <li>Example inputs you can click</li>
+        <li>Output that's formatted for reading, not debugging</li>
+        <li>Graceful handling of edge cases</li>
+    </ul>
+    <p>Study them. Then build yours better.</p>
+    <p>That's the full SpaceCraft textbook. You now know <a href="why-cpu.html">why CPU matters</a>, <a href="anatomy.html">what a Space is</a>, <a href="gpu-vs-cpu.html">how to think about compute</a>, <a href="free-apis.html">how to use free APIs</a>, <a href="build.html">how to build</a>, <a href="finding-spaces.html">how to learn from others</a>, <a href="pipelines.html">how to chain models</a>, and how to design for humans. Go build something.</p>
+</div>
+
+<div class="chapter-nav">
+    <a href="pipelines.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">7. Multi-Model Pipelines</div></a>
+    <a href="index.html" class="next"><div class="nav-dir">Back to</div><div class="nav-title">Leaderboard</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

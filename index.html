@@ -66,6 +66,7 @@
         .tag-cpu { background: var(--accent-useful-soft); color: var(--accent-useful); }
         .tag-learn { background: var(--accent-resource-soft); color: var(--accent-resource); text-decoration: none; cursor: pointer; transition: opacity 0.2s; }
         .tag-learn:hover { opacity: 0.8; }
+        .tag-session { background: var(--accent-craft-soft); color: var(--accent-craft); }
 
         .space-scores { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
         .score-group { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 48px; }
@@ -121,6 +122,8 @@
     <a href="free-apis.html">4. Free APIs</a>
     <a href="build.html">5. Build</a>
     <a href="finding-spaces.html">6. Finding Spaces</a>
+    <a href="pipelines.html">7. Pipelines</a>
+    <a href="design.html">8. Design</a>
 </nav>
 
 <div class="hero">
@@ -167,6 +170,8 @@
         <li><a href="free-apis.html"><span class="chapter-num">04</span><span class="chapter-title">Free APIs</span><span class="chapter-desc">Power without compute</span></a></li>
         <li><a href="build.html"><span class="chapter-num">05</span><span class="chapter-title">Build Your First Space</span><span class="chapter-desc">From zero to deployed</span></a></li>
         <li><a href="finding-spaces.html"><span class="chapter-num">06</span><span class="chapter-title">Finding Spaces to Study</span><span class="chapter-desc">Learning from others</span></a></li>
+        <li><a href="pipelines.html"><span class="chapter-num">07</span><span class="chapter-title">Multi-Model Pipelines</span><span class="chapter-desc">Chaining models and APIs</span></a></li>
+        <li><a href="design.html"><span class="chapter-num">08</span><span class="chapter-title">Designing for Your Audience</span><span class="chapter-desc">UX that makes people care</span></a></li>
     </ul>
 </div>
 
@@ -186,6 +191,7 @@ const spaces = [
     cpuTrick: "Small optimized TTS model",
     learnLink: "gpu-vs-cpu.html#specialized-models",
     learnLabel: "Ch 3: Specialized models",
+    sessions: "S2 S5 S7",
     note: "3,200+ likes. Proof that high-quality audio synthesis doesn't need a GPU."
   },
   {
@@ -198,6 +204,7 @@ const spaces = [
     cpuTrick: "API wrapper",
     learnLink: "free-apis.html",
     learnLabel: "Ch 4: Free APIs",
+    sessions: "S2 S3 S5",
     note: "1,000+ likes. Zero local model loading. A masterclass in using free external APIs."
   },
   {
@@ -210,6 +217,7 @@ const spaces = [
     cpuTrick: "Efficient speech synthesis",
     learnLink: "gpu-vs-cpu.html#specialized-models",
     learnLabel: "Ch 3: Specialized models",
+    sessions: "S7",
     note: "1,700+ likes. Voice cloning from a reference clip on CPU."
   },
   {
@@ -222,6 +230,7 @@ const spaces = [
     cpuTrick: "API-based TTS",
     learnLink: "free-apis.html",
     learnLabel: "Ch 4: Free APIs",
+    sessions: "S3 S5",
     note: "1,750 likes. Most TTS demos have character limits. This one doesn't."
   },
   {
@@ -234,6 +243,7 @@ const spaces = [
     cpuTrick: "Kaldi framework, CPU-optimized",
     learnLink: "gpu-vs-cpu.html#specialized-models",
     learnLabel: "Ch 3: Specialized models",
+    sessions: "S5",
     note: "468 likes. Built on Kaldi, which has decades of CPU optimization."
   },
   {
@@ -246,6 +256,7 @@ const spaces = [
     cpuTrick: "Precomputed audio, no live inference",
     learnLink: "gpu-vs-cpu.html#no-inference",
     learnLabel: "Ch 3: No inference pattern",
+    sessions: "S9",
     note: "471 likes. The arena/voting pattern needs no GPU at all."
   },
   {
@@ -258,6 +269,7 @@ const spaces = [
     cpuTrick: "Lightweight multi-task transformer",
     learnLink: "gpu-vs-cpu.html#specialized-models",
     learnLabel: "Ch 3: Specialized models",
+    sessions: "S4 S6",
     note: "86 likes. One small model doing many tasks well on CPU."
   },
   {
@@ -270,6 +282,7 @@ const spaces = [
     cpuTrick: "Medium-sized model, inference-only",
     learnLink: "anatomy.html",
     learnLabel: "Ch 2: How Spaces work",
+    sessions: "S4 S6",
     note: "176 likes. Zero-shot NER: define custom entities for any domain."
   },
   {
@@ -282,6 +295,7 @@ const spaces = [
     cpuTrick: "Small per-language-pair models",
     learnLink: "gpu-vs-cpu.html#specialized-models",
     learnLabel: "Ch 3: Specialized models",
+    sessions: "S6 S8",
     note: "32 likes. Each model handles one language pair, so each is tiny."
   },
   {
@@ -294,6 +308,7 @@ const spaces = [
     cpuTrick: "Curated small OCR models",
     learnLink: "finding-spaces.html",
     learnLabel: "Ch 6: Studying Spaces",
+    sessions: "S2 S6",
     note: "221 likes. Multi-model comparison in one Space."
   },
   {
@@ -306,6 +321,7 @@ const spaces = [
     cpuTrick: "1B model optimized for CPU",
     learnLink: "gpu-vs-cpu.html#model-sizes",
     learnLabel: "Ch 3: Model sizes",
+    sessions: "S6",
     note: "107 likes. Designed from the ground up to be efficient."
   },
   {
@@ -318,6 +334,7 @@ const spaces = [
     cpuTrick: "Built for mobile/CPU deployment",
     learnLink: "gpu-vs-cpu.html#specialized-models",
     learnLabel: "Ch 3: Specialized models",
+    sessions: "S6",
     note: "77 likes. Designed for edge devices, perfect for free CPU."
   },
   {
@@ -330,6 +347,7 @@ const spaces = [
     cpuTrick: "Lightweight OCR pipeline",
     learnLink: "build.html",
     learnLabel: "Ch 5: Build your first",
+    sessions: "S9 S10",
     note: "181 likes. Does one thing well. A great starter project to study."
   },
   {
@@ -342,6 +360,7 @@ const spaces = [
     cpuTrick: "Pure data visualization, no inference",
     learnLink: "gpu-vs-cpu.html#no-inference",
     learnLabel: "Ch 3: No inference pattern",
+    sessions: "S9 S10",
     note: "1,200+ likes. No ML inference at all. Just data, done beautifully."
   },
   {
@@ -354,6 +373,7 @@ const spaces = [
     cpuTrick: "Static leaderboard, no inference",
     learnLink: "gpu-vs-cpu.html#no-inference",
     learnLabel: "Ch 3: No inference pattern",
+    sessions: "S9 S10",
     note: "1,500+ likes. Hugely popular with zero ML compute."
   },
   {
@@ -366,6 +386,7 @@ const spaces = [
     cpuTrick: "Vector similarity search on CPU",
     learnLink: "gpu-vs-cpu.html#specialized-models",
     learnLabel: "Ch 3: Specialized models",
+    sessions: "S8",
     note: "35 likes. Semantic search is CPU-friendly because embedding lookup is cheap."
   },
   {
@@ -378,6 +399,7 @@ const spaces = [
     cpuTrick: "Efficient n-gram indexing",
     learnLink: "gpu-vs-cpu.html#specialized-models",
     learnLabel: "Ch 3: Specialized models",
+    sessions: "S4",
     note: "122 likes. Clever data structures make large-scale text analysis work on CPU."
   },
   {
@@ -390,6 +412,7 @@ const spaces = [
     cpuTrick: "CLIP embeddings are lightweight",
     learnLink: "gpu-vs-cpu.html#model-sizes",
     learnLabel: "Ch 3: Model sizes",
+    sessions: "S8",
     note: "1,300+ likes. CLIP is contrastive, not generative, so it runs well on CPU."
   },
   {
@@ -402,6 +425,7 @@ const spaces = [
     cpuTrick: "Small classification model",
     learnLink: "build.html",
     learnLabel: "Ch 5: Build your first",
+    sessions: "S1 S9 S10",
     note: "65 likes. Single-purpose tool that solves a real problem."
   },
   {
@@ -414,6 +438,7 @@ const spaces = [
     cpuTrick: "API-powered code generation",
     learnLink: "free-apis.html",
     learnLabel: "Ch 4: Free APIs",
+    sessions: "S3 S10",
     note: "Built by a Gradio core maintainer. Uses an API to generate Spaces."
   }
 ];
@@ -439,6 +464,7 @@ function sortSpaces(list, sortBy) {
 function renderCard(space, index) {
     const total = getTotal(space);
     const learnTag = space.learnLink ? `<a class="tag tag-learn" href="${space.learnLink}">${space.learnLabel}</a>` : '';
+    const sessionTag = space.sessions ? `<span class="tag tag-session" title="Relevant to course sessions">${space.sessions}</span>` : '';
     return `
         <div class="space-card">
             <div class="rank">#${index + 1}</div>
@@ -450,6 +476,7 @@ function renderCard(space, index) {
                     <span class="tag tag-category">${space.category}</span>
                     <span class="tag tag-cpu" title="${space.cpuTrick}">${space.cpuTrick}</span>
                     ${learnTag}
+                    ${sessionTag}
                 </div>
             </div>
             <div class="space-scores">

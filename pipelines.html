@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 7: Multi-Model Pipelines — SpaceCraft</title>
+    <meta name="description" content="How to chain models and APIs together in a single Space, and how to handle errors when one step fails.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-resource: #6ba3d6; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .chapter-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.2rem; font-weight: 600; margin-top: 40px; margin-bottom: 12px; }
+        .article h3 { font-size: 1rem; font-weight: 600; margin-top: 24px; margin-bottom: 8px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 6px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout-green { border-left: 3px solid var(--accent-useful); }
+        .callout-orange { border-left: 3px solid var(--accent-craft); }
+        .callout-blue { border-left: 3px solid var(--accent-resource); }
+        code { font-family: 'DM Mono', monospace; font-size: 0.84em; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text); }
+        .code-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 20px; margin: 16px 0; overflow-x: auto; font-family: 'DM Mono', monospace; font-size: 0.82rem; line-height: 1.6; color: var(--text-muted); white-space: pre; }
+        .pipeline-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 24px 0; text-align: center; font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--text-muted); }
+        .pipeline-diagram .step { display: inline-block; padding: 8px 16px; background: var(--surface-2); border-radius: var(--radius-sm); margin: 4px; }
+        .pipeline-diagram .arrow { display: inline-block; margin: 0 8px; color: var(--text-dim); }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; }
+        .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+        footer a:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="index.html" class="nav-brand">SpaceCraft</a>
+    <a href="index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="why-cpu.html">1. Why CPU-Only</a>
+    <a href="anatomy.html">2. Anatomy</a>
+    <a href="gpu-vs-cpu.html">3. GPU vs CPU</a>
+    <a href="free-apis.html">4. Free APIs</a>
+    <a href="build.html">5. Build</a>
+    <a href="finding-spaces.html">6. Finding Spaces</a>
+    <a href="pipelines.html" class="active">7. Pipelines</a>
+    <a href="design.html">8. Design</a>
+</nav>
+
+<div class="article">
+    <div class="chapter-label">Chapter 7</div>
+    <h1>Multi-Model Pipelines</h1>
+    <p class="subtitle">What happens when one model's output becomes the next model's input? You get a pipeline. You also get error cascades.</p>
+
+    <h2>What's a Pipeline?</h2>
+    <p>A pipeline chains two or more steps together. The output of step 1 becomes the input to step 2. Each step can be a model, an API call, or a data transformation.</p>
+
+    <div class="pipeline-diagram">
+        <span class="step">User Input</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">Step 1: Get Data</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">Step 2: Analyze</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">Output</span>
+    </div>
+
+    <p>You've already seen single-step Spaces: user types text, model classifies it, result appears. A pipeline does that same thing, but with multiple steps in sequence. And every step on free CPU.</p>
+
+    <h2>Example 1: API + Local Model</h2>
+    <p>This pipeline fetches news headlines (API call), then classifies the sentiment of each one (local model). Two steps, zero GPU.</p>
+
+    <div class="code-block">import gradio as gr
+import requests
+import os
+from transformers import pipeline
+
+# Step 2: Local sentiment model (67M params, runs on CPU)
+classifier = pipeline(
+    "sentiment-analysis",
+    model="distilbert-base-uncased-finetuned-sst-2-english"
+)
+
+def analyze_headlines(topic):
+    # Step 1: Fetch headlines from GNews API
+    api_key = os.environ.get("GNEWS_API_KEY")
+    url = "https://gnews.io/api/v4/search"
+    params = {"q": topic, "lang": "en", "max": 5, "apikey": api_key}
+
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        data = response.json()
+    except Exception:
+        return "Could not fetch headlines. Try again."
+
+    if "articles" not in data or not data["articles"]:
+        return f"No headlines found for '{topic}'."
+
+    # Step 2: Classify each headline
+    results = []
+    for article in data["articles"]:
+        title = article["title"]
+        sentiment = classifier(title)[0]
+        label = sentiment["label"]
+        score = round(sentiment["score"] * 100)
+        results.append(f"**{label}** ({score}%) — {title}")
+
+    return "\n\n".join(results)
+
+demo = gr.Interface(
+    fn=analyze_headlines,
+    inputs=gr.Textbox(label="News topic", placeholder="e.g. climate change"),
+    outputs=gr.Markdown(label="Headlines with sentiment"),
+    title="News Sentiment Pipeline",
+    description="Fetches headlines via GNews, then classifies "
+                "each one's sentiment using DistilBERT on CPU."
+)
+demo.launch()</div>
+
+    <div class="callout callout-blue">
+        <p><strong>What's happening:</strong> Step 1 (GNews API) runs on GNews's servers. Step 2 (DistilBERT) runs locally on your free CPU. The pipeline connects them: headlines flow from the API into the classifier. Neither step alone is remarkable. Together, they're a useful tool.</p>
+    </div>
+
+    <h2>Example 2: Chaining Two HF Inference API Calls</h2>
+    <p>If both steps are too heavy for local CPU, you can chain two remote API calls using the <a href="free-apis.html">HF Inference API</a>:</p>
+
+    <div class="pipeline-diagram">
+        <span class="step">User uploads image</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">API: Caption image</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">API: Classify caption</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">Image mood</span>
+    </div>
+
+    <div class="code-block">import gradio as gr
+import requests
+import os
+
+HF_TOKEN = os.environ.get("HF_TOKEN")
+headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+
+def caption_image(image_path):
+    """Step 1: Generate a caption for the image."""
+    with open(image_path, "rb") as f:
+        response = requests.post(
+            "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base",
+            headers=headers,
+            data=f.read()
+        )
+    result = response.json()
+    if isinstance(result, list) and len(result) > 0:
+        return result[0].get("generated_text", "")
+    return ""
+
+def classify_sentiment(text):
+    """Step 2: Classify the caption's sentiment."""
+    response = requests.post(
+        "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english",
+        headers=headers,
+        json={"inputs": text}
+    )
+    result = response.json()
+    if isinstance(result, list) and len(result) > 0:
+        top = result[0][0]
+        return f"{top['label']} ({round(top['score']*100)}%)"
+    return "Unknown"
+
+def image_mood(image):
+    caption = caption_image(image)
+    if not caption:
+        return "Could not generate a caption.", ""
+    mood = classify_sentiment(caption)
+    return caption, mood
+
+demo = gr.Interface(
+    fn=image_mood,
+    inputs=gr.Image(type="filepath", label="Upload an image"),
+    outputs=[
+        gr.Textbox(label="Caption (Step 1)"),
+        gr.Textbox(label="Mood (Step 2)")
+    ],
+    title="Image Mood Pipeline",
+    description="Captions the image (BLIP), then classifies "
+                "the caption's sentiment (DistilBERT). Both via API."
+)
+demo.launch()</div>
+
+    <p>Your Space has zero model loading. Both BLIP and DistilBERT run on Hugging Face's servers. Your Space is just the orchestration layer.</p>
+
+    <h2>Error Cascades</h2>
+    <p>Here's the thing about pipelines: <strong>errors propagate</strong>. If Step 1 produces bad output, Step 2 processes bad input. The final result is wrong, and it's not obvious where the error started.</p>
+
+    <div class="callout callout-orange">
+        <p><strong>Example:</strong> If the image captioning model says "a cat sitting on a chair" but the image is actually a dog, the sentiment classifier will correctly classify the caption's sentiment — but the whole result is wrong, because the caption was wrong. The classifier has no way to know the caption was bad. It just processes what it gets.</p>
+    </div>
+
+    <p>This is why pipelines are harder to debug than single-step tools. When something goes wrong, you need to check each step independently:</p>
+    <ol>
+        <li>Is Step 1's output reasonable? Print or display it separately.</li>
+        <li>Is Step 2 getting good input? Show the intermediate result to the user.</li>
+        <li>Is the error in the data, the model, or the connection between them?</li>
+    </ol>
+
+    <h2>Defensive Pipeline Design</h2>
+    <p>Build pipelines that handle failure gracefully:</p>
+
+    <h3>Show Intermediate Results</h3>
+    <p>Don't just show the final output. Show what each step produced. In the image mood example above, we return both the caption and the mood as separate outputs. If the caption is wrong, the user can see why the mood is off.</p>
+
+    <h3>Validate Between Steps</h3>
+    <div class="code-block"># After Step 1
+caption = caption_image(image)
+if not caption or len(caption) < 5:
+    return "Caption too short or empty — skipping analysis.", ""
+
+# Only proceed to Step 2 if Step 1 succeeded
+mood = classify_sentiment(caption)</div>
+
+    <h3>Wrap Each Step in Error Handling</h3>
+    <div class="code-block">try:
+    caption = caption_image(image)
+except Exception as e:
+    return f"Step 1 failed: {e}", ""
+
+try:
+    mood = classify_sentiment(caption)
+except Exception as e:
+    return caption, f"Step 2 failed: {e}"</div>
+
+    <h2>Pipeline Patterns on the Leaderboard</h2>
+    <p>Several Spaces on the <a href="index.html">SpaceCraft leaderboard</a> use pipeline-like architectures:</p>
+    <ul>
+        <li><strong>OPUS Translate</strong> &mdash; Could be step 1 in a translate-then-classify pipeline</li>
+        <li><strong>Pathfinder</strong> &mdash; Retrieves papers (step 1), then ranks them by relevance (step 2)</li>
+        <li><strong>CLIP Interrogator</strong> &mdash; Analyzes image embeddings (step 1), then generates text descriptions (step 2)</li>
+    </ul>
+
+    <h2>When to Use a Pipeline vs. a Single Model</h2>
+    <ul>
+        <li><strong>Use a single model</strong> when one model does the whole job well enough. Simpler is better.</li>
+        <li><strong>Use a pipeline</strong> when no single model does what you need, but two models combined can. For example: no model translates AND classifies sentiment, but you can chain a translator and a classifier.</li>
+        <li><strong>Use an API pipeline</strong> when the models you need are too large for CPU. Let the HF Inference API run them remotely and chain the results in your Space.</li>
+    </ul>
+
+    <div class="callout">
+        <p><strong>The key insight:</strong> A pipeline is only as reliable as its weakest step. Every additional step is a place where things can go wrong. Build the simplest pipeline that solves your problem, show intermediate results so users can verify, and handle errors at every step.</p>
+    </div>
+</div>
+
+<div class="chapter-nav">
+    <a href="finding-spaces.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">6. Finding Spaces</div></a>
+    <a href="design.html" class="next"><div class="nav-dir">Next chapter</div><div class="nav-title">8. Designing for Your Audience</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>
