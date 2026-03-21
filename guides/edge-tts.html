@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide: Edge TTS — SpaceCraft</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-resource: #6ba3d6; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .guide-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-craft); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.1rem; font-weight: 600; margin-top: 36px; margin-bottom: 12px; }
+        .article h3 { font-size: 0.95rem; font-weight: 600; margin-top: 24px; margin-bottom: 8px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 8px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout-blue { border-left: 3px solid var(--accent-resource); }
+        .callout-green { border-left: 3px solid var(--accent-useful); }
+        code { font-family: 'DM Mono', monospace; font-size: 0.84em; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text); }
+        .code-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 20px; margin: 16px 0; overflow-x: auto; font-family: 'DM Mono', monospace; font-size: 0.82rem; line-height: 1.6; color: var(--text-muted); white-space: pre; }
+        .annotation { background: var(--surface-2); border-left: 3px solid var(--accent-resource); padding: 12px 16px; margin: -8px 0 16px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 0.85rem; color: var(--text-muted); }
+        .pipeline-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0; text-align: center; font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--text-muted); }
+        .pipeline-diagram .step { display: inline-block; padding: 6px 14px; background: var(--surface-2); border-radius: var(--radius-sm); margin: 4px; }
+        .pipeline-diagram .arrow { display: inline-block; margin: 0 6px; color: var(--text-dim); }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; } .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="../index.html" class="nav-brand">SpaceCraft</a>
+    <a href="../index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="../why-cpu.html">1</a><a href="../anatomy.html">2</a><a href="../gpu-vs-cpu.html">3</a><a href="../free-apis.html">4</a><a href="../build.html">5</a><a href="../finding-spaces.html">6</a><a href="../pipelines.html">7</a><a href="../design.html">8</a>
+    <span class="nav-sep">|</span>
+    <a href="../methods.html">Methods</a>
+    <a href="../guides.html" class="active">Guides</a>
+    <a href="../showcase.html">Showcase</a>
+</nav>
+
+<div class="article">
+    <div class="guide-label">Build Guide &middot; API Wrapper Pattern</div>
+    <h1>Edge TTS</h1>
+    <p class="subtitle">1,000+ likes. Zero local models. This Space wraps Microsoft's free speech API in a Gradio interface. Here's how it works.</p>
+
+    <p><a href="https://huggingface.co/spaces/innoai/Edge-TTS-Text-to-Speech">View the Space on Hugging Face</a></p>
+
+    <h2>What This Space Does</h2>
+    <p>You type text, pick a voice from dozens of options across many languages, and get high-quality synthesized speech back. The audio sounds professional — natural intonation, proper pacing, clear pronunciation. And it runs on free CPU because it doesn't run a model at all.</p>
+
+    <h2>The Architecture</h2>
+    <div class="pipeline-diagram">
+        <span class="step">User types text</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">edge-tts library</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">Microsoft TTS servers</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">Audio file returned</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">gr.Audio plays it</span>
+    </div>
+
+    <p>This is the <strong>API wrapper pattern</strong> from <a href="../free-apis.html">Chapter 4</a>. The Space is a frontend. All the speech synthesis happens on Microsoft's servers. The <code>edge-tts</code> Python library handles the HTTP communication.</p>
+
+    <div class="callout callout-blue">
+        <p><strong>Key insight:</strong> The <code>edge-tts</code> library doesn't need an API key. It wraps Microsoft Edge's online speech service, which is freely available. Your <code>requirements.txt</code> is just two lines: <code>gradio</code> and <code>edge-tts</code>. That's it. No <code>torch</code>, no <code>transformers</code>, no model frameworks.</p>
+    </div>
+
+    <h2>The Code Pattern</h2>
+    <p>Here's the essential structure of an Edge TTS Space. This isn't the exact source code — it's the pattern you'd use to build your own version:</p>
+
+    <h3>1. Import and voice setup</h3>
+    <div class="code-block">import gradio as gr
+import edge_tts
+import asyncio
+import tempfile</div>
+    <div class="annotation">Only four imports. <code>edge_tts</code> handles the API communication. <code>asyncio</code> is needed because edge-tts uses async/await. <code>tempfile</code> creates temporary audio files.</div>
+
+    <h3>2. List available voices</h3>
+    <div class="code-block">async def get_voices():
+    voices = await edge_tts.list_voices()
+    return {
+        f"{v['ShortName']} - {v['Locale']}": v['ShortName']
+        for v in voices
+    }</div>
+    <div class="annotation">This calls Microsoft's service to get all available voices. There are dozens — English, Chinese, Spanish, Japanese, and more. Each voice has a short name like <code>en-US-AriaNeural</code> that you pass to the synthesis function.</div>
+
+    <h3>3. The synthesis function</h3>
+    <div class="code-block">async def synthesize(text, voice_name):
+    communicate = edge_tts.Communicate(text, voice_name)
+    with tempfile.NamedTemporaryFile(
+        suffix=".mp3", delete=False
+    ) as tmp:
+        await communicate.save(tmp.name)
+        return tmp.name</div>
+    <div class="annotation">This is the core function. <code>edge_tts.Communicate()</code> creates a synthesis request. <code>.save()</code> sends the text to Microsoft, receives the audio, and writes it to a temp file. Gradio's <code>gr.Audio</code> component can play this file directly.</div>
+
+    <h3>4. Gradio interface</h3>
+    <div class="code-block">def tts(text, voice):
+    return asyncio.run(synthesize(text, voice))
+
+demo = gr.Interface(
+    fn=tts,
+    inputs=[
+        gr.Textbox(label="Text to speak", lines=3),
+        gr.Dropdown(
+            choices=list(voices.keys()),
+            label="Voice",
+            value="en-US-AriaNeural"
+        )
+    ],
+    outputs=gr.Audio(label="Generated speech"),
+    title="Text to Speech",
+    description="Type text, pick a voice, get audio."
+)
+demo.launch()</div>
+    <div class="annotation">A simple <code>gr.Interface</code> — text input + dropdown for voice selection → audio output. The <code>asyncio.run()</code> wrapper bridges Gradio's synchronous function calls with edge-tts's async API. The dropdown is populated with the voice list from step 2.</div>
+
+    <h2>What You Could Change</h2>
+    <ol>
+        <li><strong>Add speed and pitch controls.</strong> <code>edge_tts.Communicate()</code> accepts <code>rate</code> and <code>pitch</code> parameters (e.g., <code>rate="+20%"</code>, <code>pitch="-10Hz"</code>). Add <code>gr.Slider</code> components for these. This turns the Space into a <a href="../methods/parameter-sweep.html">parameter sweep</a> tool.</li>
+        <li><strong>Filter voices by language.</strong> Instead of one giant dropdown, add a language selector that filters the voice list. Two dropdowns: language → voice. Better UX for users who know which language they want.</li>
+        <li><strong>Chain with a translation API.</strong> Add a step before TTS: translate the input text using the HF Inference API or LibreTranslate, then synthesize the translated text. Now you have a <a href="../pipelines.html">pipeline</a>: type English → get Spanish audio.</li>
+    </ol>
+
+    <h2>Connection to the Course</h2>
+    <ul>
+        <li><strong>Session 3:</strong> The GNews API build follows the same pattern — call an external service, display results. Edge TTS is the audio version of that same architecture.</li>
+        <li><strong>Session 5:</strong> Adding rate/pitch sliders creates a parameter sweep opportunity — change one variable, hear the difference.</li>
+        <li><strong><a href="../methods/comparative-analysis.html">Comparative Analysis:</a></strong> Compare Edge TTS output with Kokoro TTS (which runs a local model). Same text, different architectures, different audio quality tradeoffs.</li>
+    </ul>
+
+    <div class="callout callout-green">
+        <p><strong>The lesson:</strong> This Space has 1,000+ likes and runs zero ML inference. The value isn't in the model — it's in the interface design, the voice selection UX, and the fact that it wraps a powerful free service in a clean, shareable tool. When you build your own API-wrapper Space, that's where your effort should go: making the API easy and pleasant to use.</p>
+    </div>
+</div>
+
+<div class="chapter-nav">
+    <a href="../guides.html" class="prev"><div class="nav-dir">Back to</div><div class="nav-title">All Guides</div></a>
+    <a href="gliner.html" class="next"><div class="nav-dir">Next guide</div><div class="nav-title">GLiNER HandyLab</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

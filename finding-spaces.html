@@ -62,8 +62,11 @@
     <a href="finding-spaces.html" class="active">6. Finding Spaces</a>
     <a href="pipelines.html">7. Pipelines</a>
     <a href="design.html">8. Design</a>
+    <a href="hf-api.html">9. HF API</a>
     <span class="nav-sep">|</span>
     <a href="methods.html">Methods</a>
+    <a href="guides.html">Guides</a>
+    <a href="showcase.html">Showcase</a>
 </nav>
 
 <div class="article">
@@ -161,9 +164,43 @@
         <p><strong>Exercise:</strong> Find a CPU-only Space not on the <a href="index.html">SpaceCraft leaderboard</a>. Fork it. Read its code. Write a short analysis: what model or API does it use? How does it handle user input? What makes it work on CPU? What would you change? Then build your own variation. That cycle &mdash; find, study, build, improve &mdash; is how you get good at this.</p>
     </div>
 
+    <h2>Test Yourself: Evaluate a Space</h2>
+    <p>Here's a Space description. Rate it on SpaceCraft's three criteria, then reveal the leaderboard's actual scores.</p>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin:24px 0;">
+        <p style="font-size:0.88rem;color:var(--text);margin-bottom:6px;"><strong>OCR Image To Text</strong> by pragnakalp</p>
+        <p style="font-size:0.84rem;color:var(--text-dim);margin-bottom:12px;">181 likes. Upload an image, get extracted text. Lightweight OCR pipeline. Simple, focused, functional. Does one thing well.</p>
+
+        <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px;">
+            <div>
+                <label style="font-size:0.72rem;font-weight:500;color:var(--text-dim);display:block;margin-bottom:4px;">RESOURCEFULNESS</label>
+                <input type="range" id="score-r" min="1" max="10" value="5" style="width:120px;" oninput="document.getElementById('val-r').textContent=this.value">
+                <span id="val-r" style="font-family:'DM Mono',monospace;font-size:0.85rem;margin-left:6px;">5</span>
+            </div>
+            <div>
+                <label style="font-size:0.72rem;font-weight:500;color:var(--text-dim);display:block;margin-bottom:4px;">USEFULNESS</label>
+                <input type="range" id="score-u" min="1" max="10" value="5" style="width:120px;" oninput="document.getElementById('val-u').textContent=this.value">
+                <span id="val-u" style="font-family:'DM Mono',monospace;font-size:0.85rem;margin-left:6px;">5</span>
+            </div>
+            <div>
+                <label style="font-size:0.72rem;font-weight:500;color:var(--text-dim);display:block;margin-bottom:4px;">CRAFT</label>
+                <input type="range" id="score-c" min="1" max="10" value="5" style="width:120px;" oninput="document.getElementById('val-c').textContent=this.value">
+                <span id="val-c" style="font-family:'DM Mono',monospace;font-size:0.85rem;margin-left:6px;">5</span>
+            </div>
+        </div>
+
+        <button onclick="document.getElementById('scorecard-reveal').style.display='block'" style="padding:6px 16px;border:1px solid var(--border);border-radius:100px;background:transparent;font-family:inherit;font-size:0.78rem;cursor:pointer;color:var(--text-muted);">Reveal actual scores</button>
+
+        <div id="scorecard-reveal" style="display:none;margin-top:14px;padding:12px 16px;background:var(--surface-2);border-radius:var(--radius-sm);font-size:0.84rem;color:var(--text-muted);">
+            <p><strong>SpaceCraft scores:</strong> Resourcefulness 7 &middot; Usefulness 8 &middot; Craft 7 &middot; Total 22/30</p>
+            <p style="margin-top:6px;"><strong>Why:</strong> Resourcefulness is 7 (not 10) because it uses a standard OCR pipeline without special optimization tricks. Usefulness is 8 because OCR is genuinely useful and it works reliably. Craft is 7 — the interface is clean and focused, but it doesn't go beyond Gradio defaults. It's a good Space because it does one thing well, not because any single dimension is exceptional.</p>
+            <p style="margin-top:6px;">How close were your scores? If you scored it higher or lower, think about why. What would have to be different for you to give it a 10 in Craft?</p>
+        </div>
+    </div>
+
     <h2>Keep Going</h2>
     <p>The <a href="index.html">SpaceCraft leaderboard</a> has 20 Spaces to start with. But there are thousands more CPU-only Spaces on Hugging Face worth discovering. Use the strategies in this chapter, study what works, and build something of your own.</p>
-    <p>You've now read the whole guide. You know <a href="why-cpu.html">why CPU matters</a>, <a href="anatomy.html">what a Space is made of</a>, <a href="gpu-vs-cpu.html">how to think about compute</a>, <a href="free-apis.html">how to use free APIs</a>, <a href="build.html">how to build your first Space</a>, and how to learn from others. The rest is building.</p>
+    <p>You've read the core guide. Continue to <a href="pipelines.html">Chapter 7</a> for multi-model pipelines, <a href="design.html">Chapter 8</a> for UX design, or <a href="hf-api.html">Chapter 9</a> for using HF beyond Spaces. Or browse the <a href="methods.html">Research Methods Gallery</a> and <a href="guides.html">Build Guides</a>.</p>
 </div>
 
 <div class="chapter-nav">

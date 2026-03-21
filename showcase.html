@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Showcase — SpaceCraft</title>
+    <meta name="description" content="Spaces built by students in the Level 2 course, all running on free CPU.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-resource: #6ba3d6; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .article h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.1rem; font-weight: 600; margin-top: 36px; margin-bottom: 12px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 6px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .empty-showcase { background: var(--surface); border: 2px dashed var(--border); border-radius: var(--radius); padding: 48px 24px; text-align: center; margin: 32px 0; }
+        .empty-showcase p { color: var(--text-dim); margin-bottom: 8px; }
+        .empty-showcase .coming { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--accent-craft); }
+        .showcase-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 12px; transition: all 0.2s; }
+        .showcase-card:hover { border-color: var(--border-hover); box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+        .showcase-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 2px; }
+        .showcase-card h3 a { color: var(--text); text-decoration: none; }
+        .showcase-card h3 a:hover { color: var(--link); }
+        .showcase-card .meta { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 6px; }
+        .showcase-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
+        .showcase-card .tags { display: flex; gap: 5px; flex-wrap: wrap; }
+        .showcase-card .tag { font-size: 0.65rem; padding: 2px 8px; border-radius: 100px; background: var(--surface-2); color: var(--text-dim); }
+        .tag-pattern { background: #eef5fb; color: var(--accent-resource); }
+        .tag-method { background: #fdf3ea; color: var(--accent-craft); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="index.html" class="nav-brand">SpaceCraft</a>
+    <a href="index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="why-cpu.html">1</a><a href="anatomy.html">2</a><a href="gpu-vs-cpu.html">3</a><a href="free-apis.html">4</a><a href="build.html">5</a><a href="finding-spaces.html">6</a><a href="pipelines.html">7</a><a href="design.html">8</a><a href="hf-api.html">9</a>
+    <span class="nav-sep">|</span>
+    <a href="methods.html">Methods</a>
+    <a href="guides.html">Guides</a>
+    <a href="showcase.html" class="active">Showcase</a>
+</nav>
+
+<div class="article">
+    <h1>Student Showcase</h1>
+    <p class="subtitle">Spaces built by students in the Level 2 course. Every one runs on free CPU.</p>
+
+    <p>These Spaces were built during Sessions 10-11 of the course. Each student chose a model from their Collection, designed an interface for a specific audience, and deployed it on Hugging Face's free CPU tier. The Spaces here represent the best of each cohort — nominated by peers and refined through iteration.</p>
+
+    <h2>What Makes a Showcase Space</h2>
+    <p>To be featured here, a student Space should demonstrate at least three things from the course:</p>
+    <ul>
+        <li><strong>A clear audience</strong> — designed for a specific person, not "everyone" (<a href="design.html">Chapter 8</a>)</li>
+        <li><strong>A CPU strategy</strong> — uses one of the patterns from <a href="gpu-vs-cpu.html">Chapter 3</a>: small model, API wrapper, or no inference</li>
+        <li><strong>At least one research method applied</strong> — tested with <a href="methods/adversarial-testing.html">adversarial testing</a>, <a href="methods/fairness-audit.html">fairness auditing</a>, <a href="methods/parameter-sweep.html">parameter sweep</a>, or another <a href="methods.html">method</a></li>
+    </ul>
+
+    <h2>Spring 2026 Cohort</h2>
+
+    <div class="empty-showcase">
+        <p class="coming">Coming soon</p>
+        <p>The Spring 2026 cohort is currently in progress. Student Spaces will be featured here after Session 12 (Demo Day).</p>
+        <p>Check back after the cohort completes to see what students built.</p>
+    </div>
+
+    <!-- Template for when student Spaces are added:
+
+    <div class="showcase-card">
+        <h3><a href="https://huggingface.co/spaces/student/space-name" target="_blank">Space Name</a></h3>
+        <div class="meta">by Student Name &middot; Spring 2026</div>
+        <p>One-sentence description of what the Space does and who it's for.</p>
+        <div class="tags">
+            <span class="tag tag-pattern">API wrapper</span>
+            <span class="tag tag-method">Fairness audit</span>
+            <span class="tag tag-method">User-centered design</span>
+        </div>
+    </div>
+
+    -->
+
+    <h2>Future Cohorts</h2>
+    <p>This page grows with each cohort. If you're a student in the course and want your Space featured here, focus on the <a href="design.html">craft checklist</a> in Chapter 8. The Spaces that make the showcase are the ones where someone clearly thought about who it's for, what it should do, and how it should handle the unexpected.</p>
+
+    <div class="callout">
+        <p><strong>For instructors:</strong> After Demo Day (Session 12), nominate 3-5 Spaces from the cohort to feature here. Include the Space URL, a one-sentence description, which CPU pattern they used, and which research methods they applied. The showcase serves as both recognition for current students and inspiration for future ones.</p>
+    </div>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

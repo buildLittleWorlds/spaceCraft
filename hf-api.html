@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 9: Hugging Face as an API — SpaceCraft</title>
+    <meta name="description" content="Hugging Face is more than Spaces. Use the Inference API, huggingface_hub library, and MCP servers from anywhere.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-resource: #6ba3d6; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .chapter-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.2rem; font-weight: 600; margin-top: 40px; margin-bottom: 12px; }
+        .article h3 { font-size: 1rem; font-weight: 600; margin-top: 24px; margin-bottom: 8px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 6px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout-blue { border-left: 3px solid var(--accent-resource); }
+        .callout-green { border-left: 3px solid var(--accent-useful); }
+        .callout-orange { border-left: 3px solid var(--accent-craft); }
+        code { font-family: 'DM Mono', monospace; font-size: 0.84em; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text); }
+        .code-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 20px; margin: 16px 0; overflow-x: auto; font-family: 'DM Mono', monospace; font-size: 0.82rem; line-height: 1.6; color: var(--text-muted); white-space: pre; }
+        .spec-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.85rem; }
+        .spec-table th, .spec-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+        .spec-table th { font-weight: 600; color: var(--text); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .spec-table td { color: var(--text-muted); }
+        .spec-table tr:last-child td { border-bottom: none; }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; } .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="index.html" class="nav-brand">SpaceCraft</a>
+    <a href="index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="why-cpu.html">1</a><a href="anatomy.html">2</a><a href="gpu-vs-cpu.html">3</a><a href="free-apis.html">4</a><a href="build.html">5</a><a href="finding-spaces.html">6</a><a href="pipelines.html">7</a><a href="design.html">8</a>
+    <a href="hf-api.html" class="active">9</a>
+    <span class="nav-sep">|</span>
+    <a href="methods.html">Methods</a>
+    <a href="guides.html">Guides</a>
+</nav>
+
+<div class="article">
+    <div class="chapter-label">Chapter 9</div>
+    <h1>Hugging Face as an API</h1>
+    <p class="subtitle">Spaces are one way to use Hugging Face. But the whole platform is an API you can call from anywhere.</p>
+
+    <h2>The Bigger Picture</h2>
+    <p>Every chapter so far has focused on building Spaces — web apps deployed on Hugging Face. But Spaces are just one part of the platform. Hugging Face also gives you:</p>
+    <ul>
+        <li><strong>The Inference API</strong> — Run any public model on HF's servers from any code, anywhere</li>
+        <li><strong>The <code>huggingface_hub</code> library</strong> — Search, download, and manage models and datasets programmatically</li>
+        <li><strong>MCP servers</strong> — Spaces that other AI tools can call as services</li>
+    </ul>
+    <p>Understanding these expands what you can build far beyond web apps.</p>
+
+    <h2>The Inference API</h2>
+    <p>You've already seen the Inference API in <a href="free-apis.html">Chapter 4</a> — calling it from inside a Space. But you don't need a Space to use it. Any Python script, Jupyter notebook, or application can call the Inference API directly.</p>
+
+    <div class="code-block">import requests
+
+API_URL = "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english"
+headers = {"Authorization": "Bearer YOUR_HF_TOKEN"}
+
+response = requests.post(
+    API_URL,
+    headers=headers,
+    json={"inputs": "I love this movie!"}
+)
+print(response.json())
+# [{'label': 'POSITIVE', 'score': 0.9998}]</div>
+
+    <p>That's it. One HTTP request. The model runs on HF's servers (potentially on GPU), and you get the result back. You can run this from a Google Colab notebook, a local Python script, a JavaScript app, or a command-line tool.</p>
+
+    <div class="callout callout-blue">
+        <p><strong>What this means for you:</strong> You can build things that aren't Spaces. A Python script that analyzes a folder of documents. A notebook that classifies hundreds of rows in a spreadsheet. A Discord bot that responds to messages using an HF model. Spaces are for building web apps. The Inference API is for building anything.</p>
+    </div>
+
+    <h3>Supported Tasks</h3>
+    <p>The Inference API works with most public models on HF. Swap the model URL to change the task:</p>
+
+    <table class="spec-table">
+        <tr><th>Task</th><th>Model URL Pattern</th><th>Input</th></tr>
+        <tr><td>Sentiment analysis</td><td><code>/models/distilbert-base-uncased-finetuned-sst-2-english</code></td><td>Text</td></tr>
+        <tr><td>Translation</td><td><code>/models/Helsinki-NLP/opus-mt-en-fr</code></td><td>Text</td></tr>
+        <tr><td>Zero-shot classification</td><td><code>/models/facebook/bart-large-mnli</code></td><td>Text + labels</td></tr>
+        <tr><td>Summarization</td><td><code>/models/facebook/bart-large-cnn</code></td><td>Text</td></tr>
+        <tr><td>Image captioning</td><td><code>/models/Salesforce/blip-image-captioning-base</code></td><td>Image file</td></tr>
+        <tr><td>Text-to-speech</td><td><code>/models/facebook/mms-tts-eng</code></td><td>Text</td></tr>
+    </table>
+
+    <p>Every model page on Hugging Face has a "Deploy" button that shows you the exact API call for that model.</p>
+
+    <h3>Rate Limits</h3>
+    <p>The free tier is rate-limited — you get a burst of requests per minute, and models that aren't loaded may take 20-30 seconds on the first call. For student projects and prototyping, this is fine. For production use, there are paid Inference Endpoints with dedicated hardware and no rate limits.</p>
+
+    <h2>The huggingface_hub Library</h2>
+    <p>The <code>huggingface_hub</code> Python library gives you programmatic access to the entire Hub — models, datasets, Spaces, and more.</p>
+
+    <div class="code-block">pip install huggingface_hub</div>
+
+    <h3>Search for models</h3>
+    <div class="code-block">from huggingface_hub import HfApi
+api = HfApi()
+
+# Find the most-downloaded sentiment models
+models = api.list_models(
+    task="text-classification",
+    sort="downloads",
+    direction=-1,
+    limit=5
+)
+for m in models:
+    print(f"{m.id} — {m.downloads:,} downloads")</div>
+
+    <p>This is how you can programmatically discover models instead of browsing the website. Filter by task, language, library, size — anything you can filter on the web UI, you can filter in code.</p>
+
+    <h3>Download a model</h3>
+    <div class="code-block">from huggingface_hub import snapshot_download
+
+# Download a model to use locally
+path = snapshot_download("distilbert-base-uncased-finetuned-sst-2-english")</div>
+
+    <h3>Run inference with InferenceClient</h3>
+    <div class="code-block">from huggingface_hub import InferenceClient
+
+client = InferenceClient(token="YOUR_HF_TOKEN")
+
+# Text classification
+result = client.text_classification(
+    "I love this movie!",
+    model="distilbert-base-uncased-finetuned-sst-2-english"
+)
+
+# Translation
+translated = client.translation(
+    "Hello, how are you?",
+    model="Helsinki-NLP/opus-mt-en-fr"
+)
+
+# Summarization
+summary = client.summarization(
+    "Long article text here...",
+    model="facebook/bart-large-cnn"
+)</div>
+
+    <p><code>InferenceClient</code> is a cleaner way to call the Inference API than raw <code>requests.post()</code>. It handles authentication, serialization, and error messages for you. Each task has its own method with typed parameters.</p>
+
+    <div class="callout callout-green">
+        <p><strong>When to use InferenceClient vs. raw requests:</strong> Use <code>InferenceClient</code> when you're writing Python code and want clean, typed API access. Use raw <code>requests</code> when you need to understand exactly what's being sent (good for learning) or when you're not using Python.</p>
+    </div>
+
+    <h2>Inference API vs. Local Inference</h2>
+    <p>You now have two ways to run a model: load it locally (like in <a href="build.html">Chapter 5, Path A</a>) or call the Inference API. Each has tradeoffs:</p>
+
+    <table class="spec-table">
+        <tr><th></th><th>Local (in your Space)</th><th>Inference API</th></tr>
+        <tr><td><strong>Speed</strong></td><td>Instant after loading</td><td>1-3 seconds per call</td></tr>
+        <tr><td><strong>Model size</strong></td><td>Must fit in CPU RAM</td><td>Any size (runs on HF's GPUs)</td></tr>
+        <tr><td><strong>Offline?</strong></td><td>Works after model loads</td><td>Needs internet</td></tr>
+        <tr><td><strong>Rate limits</strong></td><td>None</td><td>Yes (free tier)</td></tr>
+        <tr><td><strong>Privacy</strong></td><td>Data stays local</td><td>Data sent to HF servers</td></tr>
+        <tr><td><strong>Best for</strong></td><td>Small models, fast response</td><td>Large models, occasional use</td></tr>
+    </table>
+
+    <p><strong>Rule of thumb:</strong> If the model is under 500M parameters and you need fast responses, load it locally. If the model is large or you only call it occasionally, use the Inference API. For <a href="pipelines.html">pipelines</a>, you can mix both — a local classifier for fast text processing and an API call for a larger model when needed.</p>
+
+    <h2>MCP Servers on Spaces</h2>
+    <p>Some Spaces on the <a href="index.html">leaderboard</a> are tagged as MCP (Model Context Protocol) servers. This means they can be called as tools by AI assistants like Claude. Instead of a human using the Gradio interface, an AI agent sends requests to the Space programmatically.</p>
+
+    <div class="callout callout-orange">
+        <p><strong>Why this matters:</strong> MCP turns a Space from a human-facing tool into a machine-facing service. A Space that does OCR can become a tool that Claude uses to read documents. A Space that does translation can become a service that any AI workflow calls when it needs to translate text. Building a Space that works as an MCP server means your tool can be used by both humans and AI agents.</p>
+    </div>
+
+    <p>On the SpaceCraft leaderboard, core OCR, Chatterbox TTS, and CLIP Interrogator are all MCP-enabled. They work as normal Gradio Spaces for human users and simultaneously serve as MCP tools for AI agents.</p>
+
+    <h2>Building Beyond Spaces</h2>
+    <p>With the Inference API and <code>huggingface_hub</code>, here are things you can build that aren't Spaces:</p>
+    <ul>
+        <li><strong>A Colab notebook</strong> that processes a CSV file — classify every row, translate every entry, summarize every document — using Inference API calls. No Space needed.</li>
+        <li><strong>A command-line tool</strong> that takes a file path, runs it through an HF model, and outputs results. A Python script you run locally.</li>
+        <li><strong>A Discord or Slack bot</strong> that responds to messages using HF models. The bot runs on your server (or a free hosting service) and calls the Inference API when someone @mentions it.</li>
+        <li><strong>A batch processor</strong> that downloads models locally with <code>snapshot_download()</code> and processes thousands of items without rate limits or network latency.</li>
+    </ul>
+    <p>Spaces are still the easiest way to share something publicly. But knowing how to use HF as an API means you're not limited to building web interfaces. You can integrate HF models into any workflow.</p>
+
+    <h2>What You Should Know Now</h2>
+    <p>After this chapter, you understand that Hugging Face is a platform with three layers:</p>
+    <ol>
+        <li><strong>The Hub</strong> — Models, datasets, and Spaces. Browse, search, and curate.</li>
+        <li><strong>The Inference API</strong> — Run any model from any code, anywhere. Free tier for prototyping.</li>
+        <li><strong>Spaces</strong> — Deploy web apps that use models, APIs, or data. Free CPU tier.</li>
+    </ol>
+    <p>Everything in this textbook has been about layer 3 (Spaces). Now you know layers 1 and 2 exist, and how to use them. That opens up a much wider world of things you can build.</p>
+</div>
+
+<div class="chapter-nav">
+    <a href="design.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">8. Designing for Your Audience</div></a>
+    <a href="index.html" class="next"><div class="nav-dir">Back to</div><div class="nav-title">Leaderboard</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

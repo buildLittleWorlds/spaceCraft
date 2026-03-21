@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide: Open ASR Leaderboard — SpaceCraft</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-resource: #6ba3d6; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .guide-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-craft); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.1rem; font-weight: 600; margin-top: 36px; margin-bottom: 12px; }
+        .article h3 { font-size: 0.95rem; font-weight: 600; margin-top: 24px; margin-bottom: 8px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 8px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout-blue { border-left: 3px solid var(--accent-resource); }
+        .callout-green { border-left: 3px solid var(--accent-useful); }
+        code { font-family: 'DM Mono', monospace; font-size: 0.84em; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text); }
+        .code-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 20px; margin: 16px 0; overflow-x: auto; font-family: 'DM Mono', monospace; font-size: 0.82rem; line-height: 1.6; color: var(--text-muted); white-space: pre; }
+        .annotation { background: var(--surface-2); border-left: 3px solid var(--accent-resource); padding: 12px 16px; margin: -8px 0 16px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 0.85rem; color: var(--text-muted); }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; } .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="../index.html" class="nav-brand">SpaceCraft</a>
+    <a href="../index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="../why-cpu.html">1</a><a href="../anatomy.html">2</a><a href="../gpu-vs-cpu.html">3</a><a href="../free-apis.html">4</a><a href="../build.html">5</a><a href="../finding-spaces.html">6</a><a href="../pipelines.html">7</a><a href="../design.html">8</a>
+    <span class="nav-sep">|</span>
+    <a href="../methods.html">Methods</a>
+    <a href="../guides.html" class="active">Guides</a>
+    <a href="../showcase.html">Showcase</a>
+</nav>
+
+<div class="article">
+    <div class="guide-label">Build Guide &middot; No-Inference Pattern</div>
+    <h1>Open ASR Leaderboard</h1>
+    <p class="subtitle">1,200+ likes. Zero ML models. This Space is pure data visualization — and it's one of the most popular Spaces on Hugging Face.</p>
+
+    <p><a href="https://huggingface.co/spaces/hf-audio/open_asr_leaderboard">View the Space on Hugging Face</a></p>
+
+    <h2>What This Space Does</h2>
+    <p>The Open ASR Leaderboard displays benchmark results for automatic speech recognition models. You can sort models by score, filter by language or dataset, search for specific models, and compare results side by side. It's a research tool used by the audio ML community to track which ASR models perform best on which tasks.</p>
+    <p>And it loads no models. It runs no inference. It doesn't use <code>transformers</code> or <code>torch</code>. It just displays data.</p>
+
+    <div class="callout callout-blue">
+        <p><strong>This is the most counterintuitive lesson in SpaceCraft:</strong> Some of the most liked, most used, most impactful Spaces on Hugging Face don't run ML at all. They curate, organize, and present data in ways that help people make decisions. That's a complete, valuable product — and it runs on free CPU because all it does is serve a table.</p>
+    </div>
+
+    <h2>The Architecture</h2>
+    <p>The architecture is almost comically simple compared to the other guides:</p>
+    <ol>
+        <li>Load benchmark data from a file (CSV, JSON, or a HF Dataset)</li>
+        <li>Put it in a DataFrame</li>
+        <li>Display it with Gradio's table component</li>
+        <li>Add sorting, filtering, and search</li>
+    </ol>
+    <p>That's the whole app. No model loading, no API calls, no async code. The value is in the <strong>data curation</strong> and the <strong>interface design</strong>.</p>
+
+    <h2>The Code Pattern</h2>
+
+    <h3>1. Load data at startup</h3>
+    <div class="code-block">import pandas as pd
+
+# Load from a CSV in your repo
+df = pd.read_csv("results.csv")
+
+# Or load from a Hugging Face Dataset
+from datasets import load_dataset
+ds = load_dataset("hf-audio/asr-benchmarks")
+df = ds["train"].to_pandas()</div>
+    <div class="annotation">Data can come from a CSV file committed to the repo, a JSON file, or a Hugging Face Dataset (which is like a CSV but hosted on HF with versioning). For a student project, a CSV in the repo is simplest. The Open ASR Leaderboard likely uses an HF Dataset so the data can be updated independently of the Space code.</div>
+
+    <h3>2. Display with gr.Dataframe</h3>
+    <div class="code-block">import gradio as gr
+
+with gr.Blocks() as demo:
+    gr.Markdown("# Open ASR Leaderboard")
+    gr.Markdown("Compare speech recognition models "
+                "across multiple benchmarks.")
+
+    gr.Dataframe(
+        value=df,
+        interactive=False,
+        wrap=True
+    )</div>
+    <div class="annotation"><code>gr.Dataframe</code> renders a sortable table. Click any column header to sort. Set <code>interactive=False</code> so users can't edit the data, only view it. That's already a functional leaderboard in about 10 lines of code.</div>
+
+    <h3>3. Add filtering (basic approach)</h3>
+    <div class="code-block">def filter_data(search_text, language):
+    filtered = df.copy()
+    if search_text:
+        mask = df.apply(
+            lambda row: search_text.lower() in
+            row.to_string().lower(), axis=1
+        )
+        filtered = filtered[mask]
+    if language and language != "All":
+        filtered = filtered[
+            filtered["language"] == language
+        ]
+    return filtered
+
+with gr.Blocks() as demo:
+    gr.Markdown("# Leaderboard")
+
+    with gr.Row():
+        search = gr.Textbox(
+            label="Search",
+            placeholder="Filter models..."
+        )
+        lang = gr.Dropdown(
+            choices=["All"] + sorted(
+                df["language"].unique().tolist()
+            ),
+            label="Language",
+            value="All"
+        )
+
+    table = gr.Dataframe(value=df, interactive=False)
+
+    search.change(filter_data, [search, lang], table)
+    lang.change(filter_data, [search, lang], table)
+
+demo.launch()</div>
+    <div class="annotation">This is the full pattern: text search + dropdown filter, both triggering the same filter function that updates the table. The <code>.change()</code> event means the table updates live as the user types or selects. For a leaderboard with more filter options, add more dropdowns/checkboxes and more columns to the filter function.</div>
+
+    <h3>4. Advanced: gradio-leaderboard component</h3>
+    <div class="code-block">from gradio_leaderboard import Leaderboard
+
+# Drop-in replacement for gr.Dataframe with
+# built-in search, column filters, and sorting
+Leaderboard(
+    value=df,
+    search_columns=["model_name"],
+    filter_columns=["language", "dataset"],
+)</div>
+    <div class="annotation">The <code>gradio-leaderboard</code> package is a third-party Gradio component specifically built for leaderboard Spaces. It adds search, column-specific filters, and sorting controls with minimal code. Install it with <code>pip install gradio-leaderboard</code>. Many of the popular leaderboard Spaces on HF use this component.</div>
+
+    <h2>Where the Data Comes From</h2>
+    <p>The hardest part of building a leaderboard isn't the code — it's the data. You need benchmark results, and those need to be accurate and up-to-date. Common approaches:</p>
+    <ul>
+        <li><strong>Manual curation:</strong> You run benchmarks yourself and commit the results as a CSV. SpaceCraft itself works this way — the leaderboard data is hand-curated.</li>
+        <li><strong>HF Dataset:</strong> Store results in a Hugging Face Dataset. This lets you update data without redeploying the Space, and others can submit results via pull requests.</li>
+        <li><strong>Submission system:</strong> The most advanced leaderboards let users submit their own models for evaluation. The Open ASR Leaderboard does this — researchers submit models, benchmarks run automatically, and results appear on the leaderboard.</li>
+    </ul>
+    <p>For a student project, manual curation (a CSV in the repo) is the right starting point. You can always upgrade later.</p>
+
+    <h2>What You Could Change</h2>
+    <ol>
+        <li><strong>Build a leaderboard for your own domain.</strong> Curate benchmark results for a topic you care about: best small language models under 1B parameters, best OCR tools for handwritten text, best CPU-friendly TTS voices. The code pattern is the same — only the data changes.</li>
+        <li><strong>Add charts.</strong> Gradio has a <code>gr.Plot</code> component that renders Matplotlib or Plotly charts. Add a bar chart showing the top 10 models, or a scatter plot comparing two metrics. Visual summaries help users spot trends faster than scanning a table.</li>
+        <li><strong>Combine with an API.</strong> Fetch live data from a free API instead of a static CSV. A "trending models" leaderboard could pull data from the HF API. A "news sentiment" dashboard could pull from GNews and classify on the fly (that's now a <a href="../pipelines.html">pipeline</a>).</li>
+    </ol>
+
+    <h2>Connection to the Course</h2>
+    <ul>
+        <li><strong>Session 9 (User-Centered Design):</strong> The Open ASR Leaderboard scores high on Craft because every design choice serves its audience: ML researchers comparing models. The filters, column headers, and sort options are exactly what that audience needs. Designing a leaderboard for a different audience would mean different columns and different filters — that's <a href="../methods/user-centered-design.html">user-centered design</a>.</li>
+        <li><strong>Session 10 (Build From Scratch):</strong> A data dashboard is one of the three starter patterns in <a href="../build.html">Chapter 5</a>. If your final project is a leaderboard or comparison tool, this guide shows you how the pattern scales from 10 rows to 1,000+.</li>
+        <li><strong><a href="../methods/comparative-analysis.html">Comparative Analysis:</a></strong> A leaderboard IS comparative analysis, institutionalized. It makes comparison the default interaction. When you build a leaderboard, you're building a tool that helps others do comparative analysis on your curated data.</li>
+    </ul>
+
+    <div class="callout callout-green">
+        <p><strong>The lesson:</strong> You don't need a model to build something people love. The Open ASR Leaderboard is one of the most popular Spaces on Hugging Face because it solves a real problem — comparing ASR models is tedious, and this Space makes it easy. The code is simple. The data curation is the hard part. If you can curate useful data and present it clearly, you have a Space that matters.</p>
+    </div>
+</div>
+
+<div class="chapter-nav">
+    <a href="gliner.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">Guide: GLiNER HandyLab</div></a>
+    <a href="../guides.html" class="next"><div class="nav-dir">Back to</div><div class="nav-title">All Guides</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

@@ -66,8 +66,11 @@
     <a href="finding-spaces.html">6. Finding Spaces</a>
     <a href="pipelines.html">7. Pipelines</a>
     <a href="design.html">8. Design</a>
+    <a href="hf-api.html">9. HF API</a>
     <span class="nav-sep">|</span>
     <a href="methods.html">Methods</a>
+    <a href="guides.html">Guides</a>
+    <a href="showcase.html">Showcase</a>
 </nav>
 
 <div class="article">
@@ -244,6 +247,42 @@ def classify(text, labels):
         <li><strong><a href="https://huggingface.co/spaces/abidlabs/gradio-playground-bot">Gradio Playground Bot</a></strong> &mdash; Uses an LLM API to generate Gradio app code.</li>
     </ul>
     <p>Study their code. See how they handle API calls, format responses, and manage errors. Then build your own.</p>
+
+    <h2>Test Yourself: Match the API</h2>
+    <p>Each project needs an API. Pick the best match, then click to check your answer.</p>
+    <div id="match-quiz"></div>
+    <script>
+    const matchData = [
+        { project: "A Space that reads any English word aloud with natural pronunciation.", choices: ["GNews", "edge-tts", "Open-Meteo", "DictionaryAPI"], correct: 1, explanation: "edge-tts converts text to speech with natural voices, no API key needed. Perfect for reading words aloud." },
+        { project: "A Space that shows tomorrow's weather for any city in the world.", choices: ["Unsplash", "REST Countries", "Open-Meteo", "Datamuse"], correct: 2, explanation: "Open-Meteo provides free weather forecasts globally with no API key. The others don't have weather data." },
+        { project: "A Space where you type a word and see its definition, part of speech, and example sentences.", choices: ["DictionaryAPI", "HF Inference API", "edge-tts", "GNews"], correct: 0, explanation: "DictionaryAPI returns definitions, parts of speech, phonetics, and examples for English words. Free, no key needed." },
+        { project: "A Space that classifies uploaded images into custom categories without loading any model locally.", choices: ["Open-Meteo", "Pexels", "GNews", "HF Inference API"], correct: 3, explanation: "The HF Inference API can run image classification models on HF's servers. Your Space sends the image, HF does the inference, you display the result." }
+    ];
+    const mqEl = document.getElementById('match-quiz');
+    matchData.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px 20px;margin:10px 0;';
+        let btns = q.choices.map((c, j) =>
+            `<button onclick="checkMatch(${i},${j})" style="padding:5px 14px;border:1px solid var(--border);border-radius:100px;background:transparent;font-family:inherit;font-size:0.78rem;cursor:pointer;color:var(--text-muted);transition:all 0.15s;">${c}</button>`
+        ).join(' ');
+        card.innerHTML = `
+            <p style="font-size:0.88rem;color:var(--text);margin-bottom:10px;"><strong>${i+1}.</strong> ${q.project}</p>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">${btns}</div>
+            <div id="match-answer-${i}" style="display:none;padding:10px 14px;border-radius:var(--radius-sm);font-size:0.84rem;"></div>
+        `;
+        mqEl.appendChild(card);
+    });
+    function checkMatch(qi, ci) {
+        const el = document.getElementById('match-answer-' + qi);
+        const q = matchData[qi];
+        const correct = ci === q.correct;
+        el.style.display = 'block';
+        el.style.background = correct ? '#eef6ee' : '#fde8e8';
+        el.style.color = correct ? '#2d6a2d' : '#9b2c2c';
+        el.innerHTML = `<strong>${correct ? 'Correct!' : 'Not quite.'}</strong> ${q.explanation}`;
+    }
+    </script>
+
     <p>Ready to actually build something? <a href="build.html">Chapter 5</a> walks you through creating your first Space from scratch.</p>
 </div>
 

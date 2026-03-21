@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build Guides — SpaceCraft</title>
+    <meta name="description" content="Annotated walkthroughs of three leaderboard Spaces, showing the code patterns behind each CPU strategy.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-resource: #6ba3d6; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 760px; margin: 0 auto; padding: 48px 24px 48px; }
+        .article h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .guide-grid { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+        .guide-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; text-decoration: none; transition: all 0.2s; display: block; }
+        .guide-card:hover { border-color: var(--border-hover); box-shadow: 0 2px 12px rgba(0,0,0,0.04); text-decoration: none; }
+        .guide-card h3 { font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+        .guide-card .guide-pattern { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-craft); margin-bottom: 8px; }
+        .guide-card p { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 10px; }
+        .guide-card .guide-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+        .guide-card .tag { font-size: 0.68rem; padding: 2px 8px; border-radius: 100px; background: var(--surface-2); color: var(--text-dim); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="index.html" class="nav-brand">SpaceCraft</a>
+    <a href="index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="why-cpu.html">1</a><a href="anatomy.html">2</a><a href="gpu-vs-cpu.html">3</a><a href="free-apis.html">4</a><a href="build.html">5</a><a href="finding-spaces.html">6</a><a href="pipelines.html">7</a><a href="design.html">8</a>
+    <span class="nav-sep">|</span>
+    <a href="methods.html">Methods</a>
+    <a href="guides.html" class="active">Guides</a>
+</nav>
+
+<div class="article">
+    <h1>Build Guides</h1>
+    <p class="subtitle">Annotated walkthroughs of three leaderboard Spaces. Each one teaches a different CPU architecture pattern.</p>
+
+    <p>These guides don't just show you what a Space does — they explain <strong>how it's built and why</strong>. Each guide covers the architecture, the key code patterns, and three modifications you could make to build your own version. They're companion material to <a href="finding-spaces.html">Chapter 6: Finding Spaces</a> — showing you what to look for when you read a Space's source code.</p>
+
+    <div class="guide-grid">
+        <a href="guides/edge-tts.html" class="guide-card">
+            <h3>Edge TTS</h3>
+            <div class="guide-pattern">Pattern: API Wrapper (Chapter 4)</div>
+            <p>How to build a powerful Space with zero local compute by wrapping Microsoft's free speech API. No model loading, no API key, no GPU.</p>
+            <div class="guide-tags"><span class="tag">edge-tts library</span><span class="tag">gr.Audio</span><span class="tag">async Python</span><span class="tag">S3 S5</span></div>
+        </a>
+        <a href="guides/gliner.html" class="guide-card">
+            <h3>GLiNER HandyLab</h3>
+            <div class="guide-pattern">Pattern: Specialized Model (Chapter 3)</div>
+            <p>How to load one small model and use it for multiple NLP tasks. Multi-tab interface, zero-shot capabilities, all on CPU.</p>
+            <div class="guide-tags"><span class="tag">GLiNER model</span><span class="tag">gr.Blocks + Tabs</span><span class="tag">zero-shot NER</span><span class="tag">S4 S6</span></div>
+        </a>
+        <a href="guides/open-asr.html" class="guide-card">
+            <h3>Open ASR Leaderboard</h3>
+            <div class="guide-pattern">Pattern: No Inference (Chapter 3)</div>
+            <p>How to build one of the most popular Spaces on HF without running any ML. Pure data visualization with sorting, filtering, and search.</p>
+            <div class="guide-tags"><span class="tag">gr.Dataframe</span><span class="tag">CSV/JSON data</span><span class="tag">no models</span><span class="tag">S9 S10</span></div>
+        </a>
+    </div>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

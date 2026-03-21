@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide: GLiNER HandyLab — SpaceCraft</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-resource: #6ba3d6; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .guide-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-craft); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.1rem; font-weight: 600; margin-top: 36px; margin-bottom: 12px; }
+        .article h3 { font-size: 0.95rem; font-weight: 600; margin-top: 24px; margin-bottom: 8px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 8px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout-blue { border-left: 3px solid var(--accent-resource); }
+        .callout-green { border-left: 3px solid var(--accent-useful); }
+        code { font-family: 'DM Mono', monospace; font-size: 0.84em; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text); }
+        .code-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 20px; margin: 16px 0; overflow-x: auto; font-family: 'DM Mono', monospace; font-size: 0.82rem; line-height: 1.6; color: var(--text-muted); white-space: pre; }
+        .annotation { background: var(--surface-2); border-left: 3px solid var(--accent-resource); padding: 12px 16px; margin: -8px 0 16px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 0.85rem; color: var(--text-muted); }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; } .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="../index.html" class="nav-brand">SpaceCraft</a>
+    <a href="../index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="../why-cpu.html">1</a><a href="../anatomy.html">2</a><a href="../gpu-vs-cpu.html">3</a><a href="../free-apis.html">4</a><a href="../build.html">5</a><a href="../finding-spaces.html">6</a><a href="../pipelines.html">7</a><a href="../design.html">8</a>
+    <span class="nav-sep">|</span>
+    <a href="../methods.html">Methods</a>
+    <a href="../guides.html" class="active">Guides</a>
+    <a href="../showcase.html">Showcase</a>
+</nav>
+
+<div class="article">
+    <div class="guide-label">Build Guide &middot; Specialized Model Pattern</div>
+    <h1>GLiNER HandyLab</h1>
+    <p class="subtitle">One small model, multiple NLP tasks, all on CPU. This Space shows how a focused model can do more than you'd expect.</p>
+
+    <p><a href="https://huggingface.co/spaces/knowledgator/GLiNER_HandyLab">View the Space on Hugging Face</a></p>
+
+    <h2>What This Space Does</h2>
+    <p>GLiNER HandyLab loads a single lightweight model and uses it for several NLP tasks: named entity recognition, relation extraction, text classification, and structured data extraction. You type text, define what you're looking for (custom entity types, relations, or categories), and the model finds them. It's zero-shot — you don't need to train it for your specific task.</p>
+
+    <h2>The Architecture</h2>
+    <p>This is the <strong>specialized model pattern</strong> from <a href="../gpu-vs-cpu.html#specialized-models">Chapter 3</a>. Instead of loading a massive general-purpose model, the Space uses GLiNER — a model designed from the ground up to be lightweight and multi-task while running on CPU.</p>
+
+    <div class="callout callout-blue">
+        <p><strong>Why GLiNER works on CPU:</strong> GLiNER is a "Generalist and Lightweight" model for entity recognition, published at NAACL 2024. The base version has roughly 200M parameters — well within the <a href="../gpu-vs-cpu.html#model-sizes">CPU-friendly range</a>. It achieves zero-shot capability not by being enormous (like GPT-4) but by being cleverly designed: it learns to match text spans to arbitrary labels at training time, so at inference time you can define any label set you want.</p>
+    </div>
+
+    <h2>The Code Pattern</h2>
+    <p>Here's the essential structure. This isn't the exact source code — it's the pattern you'd follow to build a similar multi-task NLP Space.</p>
+
+    <h3>1. Load the model once at startup</h3>
+    <div class="code-block">from gliner import GLiNER
+
+model = GLiNER.from_pretrained("urchade/gliner_medium-v2.1")</div>
+    <div class="annotation">The model loads once when the Space starts, not on every request. This is critical for CPU Spaces — model loading takes 10-30 seconds, but inference on a loaded model takes under a second. The <code>medium</code> variant balances accuracy and speed.</div>
+
+    <h3>2. Define task-specific functions</h3>
+    <div class="code-block">def extract_entities(text, labels):
+    """NER: find entities matching user-defined types."""
+    label_list = [l.strip() for l in labels.split(",")]
+    entities = model.predict_entities(
+        text, label_list, threshold=0.5
+    )
+    return format_entities(entities)
+
+def extract_relations(text, relations):
+    """Relation extraction: find connections."""
+    # Same model, different method call
+    ...
+
+def classify_text(text, categories):
+    """Zero-shot classification."""
+    # Same model, yet another method
+    ...</div>
+    <div class="annotation">The key pattern: <strong>one model, multiple functions</strong>. Each function calls a different method on the same loaded model. The user defines what to look for at runtime (entity types, relation types, categories) — that's the "zero-shot" part. No retraining needed.</div>
+
+    <h3>3. Multi-tab Gradio interface</h3>
+    <div class="code-block">import gradio as gr
+
+with gr.Blocks() as demo:
+    gr.Markdown("# GLiNER HandyLab")
+
+    with gr.Tabs():
+        with gr.Tab("NER"):
+            text_in = gr.Textbox(label="Text")
+            labels_in = gr.Textbox(
+                label="Entity types (comma-separated)",
+                placeholder="person, organization, location"
+            )
+            output = gr.Markdown()
+            btn = gr.Button("Extract")
+            btn.click(extract_entities,
+                      [text_in, labels_in], output)
+
+        with gr.Tab("Relations"):
+            # Similar layout, different function
+            ...
+
+        with gr.Tab("Classification"):
+            # Similar layout, different function
+            ...
+
+demo.launch()</div>
+    <div class="annotation"><code>gr.Blocks()</code> instead of <code>gr.Interface()</code> gives you full layout control. <code>gr.Tabs()</code> creates the multi-task interface — each tab calls a different function on the same model. This is the standard Gradio pattern for Spaces that do more than one thing.</div>
+
+    <h2>Why gr.Blocks vs gr.Interface</h2>
+    <p>In <a href="../build.html">Chapter 5</a>, all three starter Spaces use <code>gr.Interface</code> — the simplest way to build a Space. <code>gr.Interface</code> takes one function with inputs and outputs and builds the UI automatically.</p>
+    <p><code>gr.Blocks</code> is the next level. It gives you control over layout: tabs, columns, rows, conditional visibility, multiple buttons that trigger different functions. GLiNER HandyLab needs Blocks because it runs multiple tasks from one interface. When you're ready to build something more complex than a single-function tool, <code>gr.Blocks</code> is how you do it.</p>
+
+    <h2>What You Could Change</h2>
+    <ol>
+        <li><strong>Build a domain-specific NER tool.</strong> Pre-fill the entity types for a specific domain instead of asking the user to type them. For a legal tool: always extract "plaintiff," "defendant," "court," "date." For a medical tool: "symptom," "medication," "condition." Same model, different framing — that's <a href="../methods/user-centered-design.html">user-centered design</a>.</li>
+        <li><strong>Add a confidence threshold slider.</strong> The <code>threshold=0.5</code> in the code controls how confident the model needs to be before reporting an entity. Add a <code>gr.Slider(0, 1, value=0.5)</code> and let users adjust it. Low threshold = find more things, with more false positives. High threshold = find fewer things, with higher precision. That's a <a href="../methods/parameter-sweep.html">parameter sweep</a>.</li>
+        <li><strong>Chain it with another Space.</strong> Use GLiNER as step 1 in a <a href="../pipelines.html">pipeline</a>: extract entities from text, then look up each entity using a free API (Wikipedia, Wikidata, or a dictionary API). The NER output becomes the search input for step 2.</li>
+    </ol>
+
+    <h2>Connection to the Course</h2>
+    <ul>
+        <li><strong>Session 4 (Classification vs Generation):</strong> GLiNER is a classifier — it assigns labels to text spans. Compare its output structure (labels) with a generator's output (new text) to see the <a href="../methods/classification-vs-generation.html">fork</a> in action.</li>
+        <li><strong>Session 6 (External Validity):</strong> GLiNER is trained primarily on English. Test it on text from other languages or highly technical domains. Where does it break? That's <a href="../methods/external-validity.html">domain shift</a>.</li>
+        <li><strong>Session 7 (Fairness Audit):</strong> Test whether the model extracts entities equally well for names from different cultural backgrounds. That's a <a href="../methods/fairness-audit.html">fairness audit</a>.</li>
+    </ul>
+
+    <div class="callout callout-green">
+        <p><strong>The lesson:</strong> You don't need a large model to build a powerful NLP tool. GLiNER is under 500M parameters and handles tasks that would have required separate specialized models five years ago. The zero-shot capability means you can adapt it to any domain without training. For a student building on free CPU, this is the sweet spot: small enough to run, flexible enough to be useful for almost anything involving text.</p>
+    </div>
+</div>
+
+<div class="chapter-nav">
+    <a href="edge-tts.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">Guide: Edge TTS</div></a>
+    <a href="open-asr.html" class="next"><div class="nav-dir">Next guide</div><div class="nav-title">Guide: Open ASR Leaderboard</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

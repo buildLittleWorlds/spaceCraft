@@ -64,8 +64,11 @@
     <a href="finding-spaces.html">6. Finding Spaces</a>
     <a href="pipelines.html">7. Pipelines</a>
     <a href="design.html">8. Design</a>
+    <a href="hf-api.html">9. HF API</a>
     <span class="nav-sep">|</span>
     <a href="methods.html">Methods</a>
+    <a href="guides.html">Guides</a>
+    <a href="showcase.html">Showcase</a>
 </nav>
 
 <div class="article">
@@ -139,6 +142,40 @@
     <h2>The Sweet Spot</h2>
     <p>The best CPU-only Spaces live in a sweet spot: they use <strong>small, specialized models</strong> for focused tasks, or they <strong>avoid live inference entirely</strong> by using APIs, precomputation, or pure data visualization. They don't compete with GPU Spaces on raw model power. They compete on usefulness, design, and clever architecture.</p>
     <p>The next chapter covers one of the most powerful CPU strategies in detail: using free APIs to get GPU-level functionality without any local compute.</p>
+
+    <h2>Test Yourself: CPU or GPU?</h2>
+    <p>For each model description, guess whether it would run on free CPU. Click to reveal the answer.</p>
+    <div id="quiz"></div>
+    <script>
+    const quizData = [
+        { desc: "A 67M-parameter sentiment classifier (DistilBERT) that labels text as positive or negative.", answer: "cpu", explanation: "67M parameters is tiny. DistilBERT loads in ~250 MB and classifies text in under a second on CPU." },
+        { desc: "A 7B-parameter language model that generates multi-paragraph essays from a prompt.", answer: "gpu", explanation: "7B parameters needs ~14 GB RAM just for the model weights, and inference would take minutes per response on CPU. Needs GPU." },
+        { desc: "A Space that calls the GNews API, then classifies headlines with a 100M-parameter model.", answer: "cpu", explanation: "The API call is free. The 100M classifier is well within CPU range. This is the pipeline pattern from Chapter 7." },
+        { desc: "A Stable Diffusion model that generates images from text prompts in 5 seconds.", answer: "gpu", explanation: "Diffusion models run billions of matrix operations per image. The 5-second speed confirms GPU. On CPU this would take 10+ minutes." },
+        { desc: "A leaderboard that loads benchmark scores from a CSV file and displays them in a sortable table.", answer: "cpu", explanation: "No model at all. Pure data visualization. This is the no-inference pattern — and some of the most popular Spaces on HF work exactly this way." }
+    ];
+    const quizEl = document.getElementById('quiz');
+    quizData.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px 20px;margin:10px 0;cursor:pointer;transition:all 0.2s;';
+        card.innerHTML = `
+            <p style="font-size:0.88rem;color:var(--text);margin-bottom:10px;"><strong>${i+1}.</strong> ${q.desc}</p>
+            <div style="display:flex;gap:8px;margin-bottom:10px;">
+                <button onclick="event.stopPropagation();reveal(${i})" style="padding:6px 16px;border:1px solid var(--border);border-radius:100px;background:transparent;font-family:inherit;font-size:0.78rem;cursor:pointer;color:var(--text-muted);">Show answer</button>
+            </div>
+            <div id="answer-${i}" style="display:none;padding:10px 14px;border-radius:var(--radius-sm);font-size:0.84rem;margin-top:4px;"></div>
+        `;
+        quizEl.appendChild(card);
+    });
+    function reveal(i) {
+        const el = document.getElementById('answer-' + i);
+        const q = quizData[i];
+        el.style.display = 'block';
+        el.style.background = q.answer === 'cpu' ? '#eef6ee' : '#fde8e8';
+        el.style.color = q.answer === 'cpu' ? '#2d6a2d' : '#9b2c2c';
+        el.innerHTML = `<strong>${q.answer === 'cpu' ? 'CPU' : 'GPU'}</strong> — ${q.explanation}`;
+    }
+    </script>
 </div>
 
 <div class="chapter-nav">
