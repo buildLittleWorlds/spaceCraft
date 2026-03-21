@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 6: Finding Spaces — SpaceCraft</title>
+    <meta name="description" content="How to scout for great CPU-only Hugging Face Spaces, study their code, and learn from what works.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-resource: #6ba3d6; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .chapter-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.2rem; font-weight: 600; margin-top: 40px; margin-bottom: 12px; }
+        .article h3 { font-size: 1rem; font-weight: 600; margin-top: 24px; margin-bottom: 8px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 6px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        code { font-family: 'DM Mono', monospace; font-size: 0.84em; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text); }
+        .spec-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.85rem; }
+        .spec-table th, .spec-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+        .spec-table th { font-weight: 600; color: var(--text); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .spec-table td { color: var(--text-muted); }
+        .spec-table tr:last-child td { border-bottom: none; }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; }
+        .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+        footer a:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="index.html" class="nav-brand">SpaceCraft</a>
+    <a href="index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="why-cpu.html">1. Why CPU-Only</a>
+    <a href="anatomy.html">2. Anatomy</a>
+    <a href="gpu-vs-cpu.html">3. GPU vs CPU</a>
+    <a href="free-apis.html">4. Free APIs</a>
+    <a href="build.html">5. Build</a>
+    <a href="finding-spaces.html" class="active">6. Finding Spaces</a>
+</nav>
+
+<div class="article">
+    <div class="chapter-label">Chapter 6</div>
+    <h1>Finding Spaces to Study</h1>
+    <p class="subtitle">The fastest way to get better at building Spaces is to read other people's code. Here's how to find the good ones.</p>
+
+    <h2>Where to Browse</h2>
+    <p>The main directory is at <a href="https://huggingface.co/spaces">huggingface.co/spaces</a>. By default it shows trending Spaces, which tend to be GPU-heavy. You need to look deeper.</p>
+
+    <table class="spec-table">
+        <tr><th>Sort By</th><th>What You'll Find</th><th>CPU Gems</th></tr>
+        <tr><td><strong>Trending</strong></td><td>What's popular right now</td><td>Occasionally a lightweight tool goes viral</td></tr>
+        <tr><td><strong>Most Likes</strong></td><td>All-time popular</td><td>Leaderboards, dashboards, classic tools</td></tr>
+        <tr><td><strong>Most Recent</strong></td><td>Newest Spaces</td><td>Many start on CPU before upgrading</td></tr>
+    </table>
+
+    <p><strong>Best strategy:</strong> Sort by "Most Likes" and scroll. The all-time popular list includes many CPU-only tools mixed in with GPU generators. These long-lived CPU Spaces are the best to study because they've been refined over time.</p>
+
+    <h2>Search Terms That Find CPU Spaces</h2>
+    <p>The search bar searches across names, descriptions, and tags:</p>
+
+    <table class="spec-table">
+        <tr><th>Search</th><th>What It Finds</th></tr>
+        <tr><td><code>leaderboard</code></td><td>Data visualization Spaces (almost always CPU-only)</td></tr>
+        <tr><td><code>OCR</code></td><td>Document text extraction (many lightweight models)</td></tr>
+        <tr><td><code>NER</code></td><td>Text analysis tools (small, specialized models)</td></tr>
+        <tr><td><code>translation</code></td><td>Language translation (distilled models often work on CPU)</td></tr>
+        <tr><td><code>TTS</code></td><td>Speech synthesis (some optimized for CPU)</td></tr>
+        <tr><td><code>classifier</code></td><td>Text classification (small models)</td></tr>
+        <tr><td><code>embedding</code></td><td>Semantic search (CPU-efficient)</td></tr>
+        <tr><td><code>arena</code></td><td>Voting/comparison tools (no heavy inference)</td></tr>
+    </table>
+
+    <h2>How to Confirm a Space Runs on CPU</h2>
+    <p>When you find something interesting:</p>
+    <ol>
+        <li><strong>Check the hardware badge</strong> on the Space page. "CPU Basic" or no GPU label = free tier.</li>
+        <li><strong>Click "Files"</strong> and check the <code>README.md</code> frontmatter. No <code>hardware:</code> field means free CPU.</li>
+        <li><strong>Read <code>app.py</code>.</strong> Small models, pipeline-only inference, and API calls all mean CPU-friendly.</li>
+        <li><strong>Check <code>requirements.txt</code>.</strong> No <code>torch</code> at all (just <code>gradio</code> and an API client) = almost certainly CPU. Has <code>torch</code> but no <code>xformers</code> or <code>flash-attn</code> = probably CPU.</li>
+        <li><strong>Fork it.</strong> The ultimate test. Fork to your free account and see if it runs.</li>
+    </ol>
+
+    <h2>Reading a Space's Code</h2>
+    <p>Once you find a CPU Space worth studying, here's what to look for in the source:</p>
+
+    <h3>Model Loading Patterns</h3>
+    <ul>
+        <li><code>pipeline("task", model="...")</code> &mdash; HF pipeline. Check the model name: small models (under 500M params) work on CPU. (<a href="gpu-vs-cpu.html#specialized-models">Chapter 3</a>)</li>
+        <li><code>onnxruntime</code> or <code>.onnx</code> files &mdash; Optimized for CPU inference. (<a href="gpu-vs-cpu.html">Chapter 3</a>)</li>
+        <li><code>requests.post()</code> or API client library &mdash; Delegating compute externally. (<a href="free-apis.html">Chapter 4</a>)</li>
+        <li>No model at all, just CSV/JSON data &mdash; Pure visualization. (<a href="gpu-vs-cpu.html#no-inference">Chapter 3</a>)</li>
+    </ul>
+
+    <h3>Gradio Components</h3>
+    <p>The components tell you what kind of interface it builds:</p>
+    <ul>
+        <li><code>gr.Textbox</code> + <code>gr.Textbox</code> &mdash; Text in, text out. Classic NLP tool.</li>
+        <li><code>gr.File</code> + <code>gr.Textbox</code> &mdash; Document upload and extraction (OCR).</li>
+        <li><code>gr.Dataframe</code> &mdash; Data display. Leaderboards and dashboards.</li>
+        <li><code>gr.Audio</code> &mdash; Audio input or output. TTS and ASR tools.</li>
+        <li><code>gr.Dropdown</code> + <code>gr.Textbox</code> &mdash; Model or option selection.</li>
+    </ul>
+
+    <h2>Community Signals</h2>
+    <p>How to judge quality before diving into code:</p>
+    <ul>
+        <li><strong>Likes</strong> &mdash; A CPU Space with 100+ likes is almost certainly worth studying.</li>
+        <li><strong>Recent commits</strong> &mdash; Check the Files tab. Recent updates mean it likely works with current libraries.</li>
+        <li><strong>Discussions</strong> &mdash; The Discussions tab shows user feedback. Are people using it successfully?</li>
+        <li><strong>Forks</strong> &mdash; A highly-forked Space is one other builders found worth copying. Strong signal.</li>
+    </ul>
+
+    <h2>Four Patterns Worth Studying</h2>
+    <p>After reviewing dozens of CPU Spaces for the <a href="index.html">leaderboard</a>, four architectural patterns stood out. Each one is a template you can build on.</p>
+
+    <h3>1. The API Wrapper</h3>
+    <p>Build a polished Gradio interface that calls a <a href="free-apis.html">free API</a> for the heavy lifting. Your Space handles UI, input validation, and output formatting. All compute happens elsewhere.</p>
+    <p><strong>Leaderboard examples:</strong> Edge TTS, Text-To-Speech Unlimited, Gradio Playground Bot</p>
+
+    <h3>2. The Specialized Model</h3>
+    <p>Use a <a href="gpu-vs-cpu.html#specialized-models">small model</a> trained for one task. It won't win general benchmarks, but it'll be fast and effective in its niche.</p>
+    <p><strong>Leaderboard examples:</strong> GLiNER HandyLab, OPUS Translate, Kokoro TTS</p>
+
+    <h3>3. The Data Dashboard</h3>
+    <p><a href="gpu-vs-cpu.html#no-inference">No ML inference at all.</a> Load pre-computed data and let users explore it with filters, sorts, and visualizations.</p>
+    <p><strong>Leaderboard examples:</strong> Open ASR Leaderboard, Big Code Models Leaderboard</p>
+
+    <h3>4. The Crowd Tool</h3>
+    <p>Let users contribute data rather than consuming compute. Voting systems, annotation tools, and submission platforms are inherently CPU-friendly because the "work" is done by the users.</p>
+    <p><strong>Leaderboard example:</strong> TTS Spaces Arena</p>
+
+    <div class="callout">
+        <p><strong>Exercise:</strong> Find a CPU-only Space not on the <a href="index.html">SpaceCraft leaderboard</a>. Fork it. Read its code. Write a short analysis: what model or API does it use? How does it handle user input? What makes it work on CPU? What would you change? Then build your own variation. That cycle &mdash; find, study, build, improve &mdash; is how you get good at this.</p>
+    </div>
+
+    <h2>Keep Going</h2>
+    <p>The <a href="index.html">SpaceCraft leaderboard</a> has 20 Spaces to start with. But there are thousands more CPU-only Spaces on Hugging Face worth discovering. Use the strategies in this chapter, study what works, and build something of your own.</p>
+    <p>You've now read the whole guide. You know <a href="why-cpu.html">why CPU matters</a>, <a href="anatomy.html">what a Space is made of</a>, <a href="gpu-vs-cpu.html">how to think about compute</a>, <a href="free-apis.html">how to use free APIs</a>, <a href="build.html">how to build your first Space</a>, and how to learn from others. The rest is building.</p>
+</div>
+
+<div class="chapter-nav">
+    <a href="build.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">5. Build Your First Space</div></a>
+    <a href="index.html" class="next"><div class="nav-dir">Back to</div><div class="nav-title">Leaderboard</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 3: GPU vs CPU — SpaceCraft</title>
+    <meta name="description" content="Why some Spaces need GPUs and others don't. Model sizes, CPU tricks, and red flags.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .chapter-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.2rem; font-weight: 600; margin-top: 40px; margin-bottom: 12px; }
+        .article h3 { font-size: 1rem; font-weight: 600; margin-top: 24px; margin-bottom: 8px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 6px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout-green { border-left: 3px solid var(--accent-useful); }
+        .callout-orange { border-left: 3px solid var(--accent-craft); }
+        code { font-family: 'DM Mono', monospace; font-size: 0.84em; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text); }
+        .spec-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.85rem; }
+        .spec-table th, .spec-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+        .spec-table th { font-weight: 600; color: var(--text); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .spec-table td { color: var(--text-muted); }
+        .spec-table tr:last-child td { border-bottom: none; }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; }
+        .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+        footer a:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="index.html" class="nav-brand">SpaceCraft</a>
+    <a href="index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="why-cpu.html">1. Why CPU-Only</a>
+    <a href="anatomy.html">2. Anatomy</a>
+    <a href="gpu-vs-cpu.html" class="active">3. GPU vs CPU</a>
+    <a href="free-apis.html">4. Free APIs</a>
+    <a href="build.html">5. Build</a>
+    <a href="finding-spaces.html">6. Finding Spaces</a>
+</nav>
+
+<div class="article">
+    <div class="chapter-label">Chapter 3</div>
+    <h1>GPU vs CPU</h1>
+    <p class="subtitle">Why some Spaces need a GPU, how to tell the difference, and the tricks that make CPU work.</p>
+
+    <h2>Why GPUs Exist for ML</h2>
+    <p>Machine learning is mostly matrix multiplication. Training a model and running inference both involve multiplying enormous matrices of numbers, millions of times. CPUs do this sequentially &mdash; one operation after another. GPUs do it in parallel &mdash; thousands of operations at the same time.</p>
+    <p>For a model with billions of parameters processing a high-resolution image, the difference is dramatic: what takes minutes on CPU can take seconds on GPU. That's why the flashiest Spaces require GPUs.</p>
+    <p>But not every ML task involves enormous matrices. And not every useful Space even runs an ML model.</p>
+
+    <h2 id="model-sizes">Model Size Rules of Thumb</h2>
+    <p>The biggest factor in whether a model runs on CPU is its <strong>parameter count</strong>:</p>
+
+    <table class="spec-table">
+        <tr><th>Size</th><th>Params</th><th>RAM Needed</th><th>CPU Viable?</th></tr>
+        <tr><td>Tiny</td><td>&lt; 100M</td><td>&lt; 500 MB</td><td>Yes, fast</td></tr>
+        <tr><td>Small</td><td>100M &ndash; 500M</td><td>500 MB &ndash; 2 GB</td><td>Yes, reasonable</td></tr>
+        <tr><td>Medium</td><td>500M &ndash; 1B</td><td>2 &ndash; 4 GB</td><td>Yes, slower</td></tr>
+        <tr><td>Large</td><td>1B &ndash; 3B</td><td>4 &ndash; 12 GB</td><td>Maybe, with tricks</td></tr>
+        <tr><td>Very Large</td><td>3B+</td><td>12+ GB</td><td>Usually not</td></tr>
+    </table>
+
+    <p>These are rough numbers. Actual RAM depends on architecture and precision. But as a first approximation: <strong>under 1B parameters is usually CPU-friendly. Over 3B usually needs a GPU.</strong></p>
+
+    <h2>How to Check a Space's Hardware</h2>
+    <p>Every Space on Hugging Face shows its hardware tier:</p>
+    <ol>
+        <li><strong>The Space page header</strong> &mdash; Look near the title for a badge: "CPU Basic", "T4 small", "A10G", etc.</li>
+        <li><strong>The README frontmatter</strong> &mdash; Click "Files" and check for a <code>hardware:</code> field. If it's absent, the Space uses free CPU.</li>
+        <li><strong>The Settings tab</strong> &mdash; If you own the Space, Settings shows the hardware selection.</li>
+    </ol>
+
+    <div class="callout callout-green">
+        <p><strong>Quick rule:</strong> If a Space says "CPU Basic" or shows no GPU label, it's on the free tier. You can fork it and run your own copy for free.</p>
+    </div>
+
+    <h2>Five Strategies That Make CPU Work</h2>
+
+    <h3 id="specialized-models">1. Choose Small, Specialized Models</h3>
+    <p>A 100M-parameter model trained specifically for NER will often outperform a 7B general-purpose model on NER tasks &mdash; and run 100x faster on CPU. The GLiNER models on the <a href="index.html">leaderboard</a> demonstrate this. Small and focused beats large and general.</p>
+
+    <h3>2. ONNX Runtime</h3>
+    <p>ONNX (Open Neural Network Exchange) optimizes models for inference. Converting a PyTorch model to ONNX and running it with <code>onnxruntime</code> can give 2&ndash;5x speedups on CPU. The runtime is also much smaller than full PyTorch, which means faster startup.</p>
+
+    <h3>3. Quantization</h3>
+    <p>Quantization reduces model precision from 32-bit floats to 8-bit integers (or even 4-bit). This shrinks the model by 4&ndash;8x and speeds up CPU inference significantly, usually with minimal quality loss. Libraries like <code>optimum</code> make this straightforward.</p>
+
+    <h3>4. API Delegation</h3>
+    <p>Some of the most popular CPU Spaces don't run models locally at all. They call external APIs. Edge TTS calls Microsoft's speech API. Gradio Playground Bot calls an LLM API. The Space is just a frontend &mdash; all the heavy compute happens elsewhere.</p>
+    <p>This is such an important pattern that it has its own chapter: <a href="free-apis.html">Chapter 4: Free APIs</a>.</p>
+
+    <div class="callout callout-orange">
+        <p><strong>Tradeoff:</strong> API delegation means your Space depends on an external service. If the API goes down or changes terms, your Space breaks. Free APIs may have rate limits. But for a student project, this is often the right call.</p>
+    </div>
+
+    <h3 id="no-inference">5. No Inference at All</h3>
+    <p>The Open ASR Leaderboard and Big Code Models Leaderboard are among the most-liked Spaces on Hugging Face, and they run zero ML inference. They're pure data visualization: tables, charts, and filters on pre-existing benchmark data. You can build a hugely popular Space with nothing but Gradio's data display components and a CSV file.</p>
+
+    <h2>Red Flags: When a Space Probably Needs GPU</h2>
+    <p>When you're browsing Spaces and wondering whether something could run on CPU, watch for:</p>
+    <ul>
+        <li><strong>Diffusion models</strong> (Stable Diffusion, FLUX) &mdash; Image generation almost always needs GPU.</li>
+        <li><strong>Video generation</strong> &mdash; Frame-by-frame inference is extremely compute-heavy.</li>
+        <li><strong>Large language models (&gt;3B params)</strong> &mdash; Chatting with Llama 7B or Qwen 7B requires GPU.</li>
+        <li><strong>Real-time inference on large models</strong> &mdash; If it responds in under a second with a large model, it's on GPU.</li>
+        <li><strong>GPU-specific packages in requirements.txt</strong> &mdash; <code>xformers</code>, <code>flash-attn</code>, or CUDA-specific <code>bitsandbytes</code>.</li>
+    </ul>
+
+    <h2>The Sweet Spot</h2>
+    <p>The best CPU-only Spaces live in a sweet spot: they use <strong>small, specialized models</strong> for focused tasks, or they <strong>avoid live inference entirely</strong> by using APIs, precomputation, or pure data visualization. They don't compete with GPU Spaces on raw model power. They compete on usefulness, design, and clever architecture.</p>
+    <p>The next chapter covers one of the most powerful CPU strategies in detail: using free APIs to get GPU-level functionality without any local compute.</p>
+</div>
+
+<div class="chapter-nav">
+    <a href="anatomy.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">2. Anatomy of a Space</div></a>
+    <a href="free-apis.html" class="next"><div class="nav-dir">Next chapter</div><div class="nav-title">4. Free APIs</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 1: Why CPU-Only — SpaceCraft</title>
+    <meta name="description" content="Why building on free CPU is actually a feature, not a limitation. The case for constraints.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-resource: #6ba3d6; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .chapter-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.2rem; font-weight: 600; margin-top: 40px; margin-bottom: 12px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 6px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .spec-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.85rem; }
+        .spec-table th, .spec-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+        .spec-table th { font-weight: 600; color: var(--text); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .spec-table td { color: var(--text-muted); }
+        .spec-table tr:last-child td { border-bottom: none; }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; }
+        .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+        footer a:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="index.html" class="nav-brand">SpaceCraft</a>
+    <a href="index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="why-cpu.html" class="active">1. Why CPU-Only</a>
+    <a href="anatomy.html">2. Anatomy</a>
+    <a href="gpu-vs-cpu.html">3. GPU vs CPU</a>
+    <a href="free-apis.html">4. Free APIs</a>
+    <a href="build.html">5. Build</a>
+    <a href="finding-spaces.html">6. Finding Spaces</a>
+</nav>
+
+<div class="article">
+    <div class="chapter-label">Chapter 1</div>
+    <h1>Why CPU-Only Matters</h1>
+    <p class="subtitle">You have a free Hugging Face account. That means CPU. Here's why that's actually a feature, not a limitation.</p>
+
+    <h2>The Inspiration Gap</h2>
+    <p>When you browse Hugging Face Spaces, the most popular ones are flashy: real-time image generators, video synthesis tools, massive language models with polished chat interfaces. They're impressive. They're also running on expensive GPUs &mdash; T4, A10G, A100 hardware that costs real money.</p>
+    <p>If you try to build something like them on a free account, you'll hit a wall. Your Space runs on CPU. The model won't load, or it'll take minutes to produce a single result. It's easy to conclude that you can't build anything interesting.</p>
+    <p>That conclusion is wrong. The <a href="index.html">SpaceCraft leaderboard</a> exists to prove it. Every Space on it runs on free CPU, and some of them have thousands of likes.</p>
+
+    <h2>What You Actually Get for Free</h2>
+    <p>When you create a Space on a free Hugging Face account, here's what's running your code:</p>
+
+    <table class="spec-table">
+        <tr><th>Resource</th><th>Free CPU Tier</th></tr>
+        <tr><td>CPU</td><td>2 vCPU</td></tr>
+        <tr><td>RAM</td><td>16 GB</td></tr>
+        <tr><td>GPU</td><td>None</td></tr>
+        <tr><td>Disk</td><td>50 GB (ephemeral)</td></tr>
+        <tr><td>Timeout</td><td>Sleeps after 48h of inactivity</td></tr>
+        <tr><td>Cost</td><td>$0</td></tr>
+    </table>
+
+    <p>16 GB of RAM is a lot. Many useful ML models fit comfortably in that space. The constraint is the lack of GPU: matrix operations that take seconds on a GPU take minutes on CPU. For small models and clever architectures, this is fine. For billion-parameter image generators, it's a dealbreaker.</p>
+    <p>The full hardware tier breakdown is in <a href="gpu-vs-cpu.html">Chapter 3: GPU vs CPU</a>.</p>
+
+    <h2>Why Constraints Are Good</h2>
+    <p>Building within limits teaches you skills that matter more than knowing how to call a GPU-heavy model:</p>
+    <ul>
+        <li><strong>Model selection</strong> &mdash; Choosing the right model for the hardware, not the most impressive model on a leaderboard.</li>
+        <li><strong>Architecture thinking</strong> &mdash; Deciding what runs locally vs. what gets delegated to a <a href="free-apis.html">free API</a>.</li>
+        <li><strong>Efficiency</strong> &mdash; Quantization, ONNX optimization, caching. These are professional ML engineering skills.</li>
+        <li><strong>Product thinking</strong> &mdash; What can you build that people will actually use? Not every useful tool needs a GPU.</li>
+    </ul>
+
+    <div class="callout">
+        <p><strong>The professional version of this:</strong> In production, GPU time costs real money. Engineers who know how to minimize GPU usage, optimize inference, and design systems that work within constraints are more valuable than engineers who only know how to throw GPUs at problems.</p>
+    </div>
+
+    <h2>What CPU-Only Spaces Actually Look Like</h2>
+    <p>Here's a sample of what's possible on free CPU. You can see all of these on the <a href="index.html">leaderboard</a>:</p>
+    <ul>
+        <li><strong>Kokoro TTS</strong> (3,200+ likes) &mdash; High-quality speech synthesis. The model was designed to be CPU-efficient.</li>
+        <li><strong>Edge TTS</strong> (1,000+ likes) &mdash; Text-to-speech using Microsoft's free API. Zero local compute. (<a href="free-apis.html">Chapter 4</a> covers this pattern.)</li>
+        <li><strong>Open ASR Leaderboard</strong> (1,200+ likes) &mdash; One of the most popular Spaces on HF. It runs no ML inference at all &mdash; it's pure data visualization.</li>
+        <li><strong>GLiNER HandyLab</strong> (86 likes) &mdash; Runs NER, QA, and summarization from a single lightweight model on CPU.</li>
+    </ul>
+
+    <h2>What You Should Take Away</h2>
+    <ol>
+        <li><strong>Start with the problem, not the model.</strong> What do you want your Space to do? Then find the smallest model that does it well enough.</li>
+        <li><strong>Study what works.</strong> The <a href="index.html">leaderboard</a> and <a href="finding-spaces.html">Chapter 6</a> show you how to find and learn from existing Spaces.</li>
+        <li><strong>Consider APIs.</strong> Some of the most popular CPU Spaces don't run models locally at all. <a href="free-apis.html">Chapter 4</a> covers this in detail.</li>
+        <li><strong>Data visualization needs no GPU.</strong> Leaderboards and dashboards are some of the most-liked Spaces on the platform.</li>
+        <li><strong>Polish matters.</strong> A clean, focused Space that does one thing well on CPU beats a broken GPU Space every time.</li>
+    </ol>
+
+    <p>Ready to learn what a Space is actually made of? Move on to <a href="anatomy.html">Chapter 2</a>.</p>
+</div>
+
+<div class="chapter-nav">
+    <a href="index.html" class="prev"><div class="nav-dir">Back to</div><div class="nav-title">Leaderboard</div></a>
+    <a href="anatomy.html" class="next"><div class="nav-dir">Next chapter</div><div class="nav-title">2. Anatomy of a Space</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

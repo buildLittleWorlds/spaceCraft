@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 4: Free APIs — SpaceCraft</title>
+    <meta name="description" content="How to build powerful Hugging Face Spaces by calling free APIs instead of running models locally.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-resource: #6ba3d6; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .chapter-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.2rem; font-weight: 600; margin-top: 40px; margin-bottom: 12px; }
+        .article h3 { font-size: 1rem; font-weight: 600; margin-top: 24px; margin-bottom: 8px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 6px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout-green { border-left: 3px solid var(--accent-useful); }
+        .callout-orange { border-left: 3px solid var(--accent-craft); }
+        .callout-blue { border-left: 3px solid var(--accent-resource); }
+        code { font-family: 'DM Mono', monospace; font-size: 0.84em; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text); }
+        .code-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 20px; margin: 16px 0; overflow-x: auto; font-family: 'DM Mono', monospace; font-size: 0.82rem; line-height: 1.6; color: var(--text-muted); white-space: pre; }
+        .spec-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.85rem; }
+        .spec-table th, .spec-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+        .spec-table th { font-weight: 600; color: var(--text); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .spec-table td { color: var(--text-muted); }
+        .spec-table tr:last-child td { border-bottom: none; }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; }
+        .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+        footer a:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="index.html" class="nav-brand">SpaceCraft</a>
+    <a href="index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="why-cpu.html">1. Why CPU-Only</a>
+    <a href="anatomy.html">2. Anatomy</a>
+    <a href="gpu-vs-cpu.html">3. GPU vs CPU</a>
+    <a href="free-apis.html" class="active">4. Free APIs</a>
+    <a href="build.html">5. Build</a>
+    <a href="finding-spaces.html">6. Finding Spaces</a>
+</nav>
+
+<div class="article">
+    <div class="chapter-label">Chapter 4</div>
+    <h1>Free APIs</h1>
+    <p class="subtitle">The most powerful CPU strategy: let someone else's servers do the heavy lifting. Your Space just handles the interface.</p>
+
+    <h2>The Pattern</h2>
+    <p>Some of the most popular CPU-only Spaces on the <a href="index.html">leaderboard</a> don't run ML models at all. They call an <strong>external API</strong> that does the work, then display the results in a polished Gradio interface. Your Space is the frontend. The API is the backend.</p>
+    <p>This is not cheating. This is how professional software is built. Almost every app you use daily works this way: your phone is a thin client calling APIs that run on powerful servers somewhere else.</p>
+
+    <h2>How It Works in a Space</h2>
+    <p>The basic flow:</p>
+    <ol>
+        <li>User enters input in your Gradio interface</li>
+        <li>Your <code>app.py</code> sends a request to an external API</li>
+        <li>The API processes it (on their hardware, with their GPU if needed)</li>
+        <li>Your Space receives the result and displays it</li>
+    </ol>
+    <p>Your Space uses almost zero compute. All the heavy work happens on the API provider's servers.</p>
+
+    <h2>A Simple Example</h2>
+    <p>Here's what an API-powered Space looks like. This calls a news API and displays results:</p>
+    <div class="code-block">import gradio as gr
+import requests
+import os
+
+def get_headlines(topic):
+    api_key = os.environ.get("NEWS_API_KEY")
+    url = "https://gnews.io/api/v4/search"
+    params = {
+        "q": topic,
+        "lang": "en",
+        "max": 5,
+        "apikey": api_key
+    }
+    response = requests.get(url, params=params)
+    data = response.json()
+
+    if "articles" not in data:
+        return "No results found."
+
+    results = []
+    for article in data["articles"]:
+        results.append(
+            f"**{article['title']}**\n"
+            f"{article['description']}\n"
+            f"[Read more]({article['url']})\n"
+        )
+    return "\n---\n".join(results)
+
+demo = gr.Interface(
+    fn=get_headlines,
+    inputs=gr.Textbox(label="Search topic"),
+    outputs=gr.Markdown(label="Headlines"),
+    title="World Headlines",
+    description="Search for news on any topic."
+)
+demo.launch()</div>
+
+    <p>That's a complete Space. It uses the GNews API (free tier: 100 requests/day) and needs no ML model at all. The <code>requirements.txt</code> is just two lines: <code>gradio</code> and <code>requests</code>.</p>
+
+    <div class="callout callout-blue">
+        <p><strong>Key detail:</strong> The API key is stored as a Secret in your Space settings (see <a href="anatomy.html">Chapter 2</a>), not in the code. <code>os.environ.get("NEWS_API_KEY")</code> reads it from the environment at runtime.</p>
+    </div>
+
+    <h2>Free APIs Worth Knowing</h2>
+    <p>Here are APIs with free tiers generous enough for student projects. Each one can power a Hugging Face Space with zero local compute:</p>
+
+    <h3>Text and Language</h3>
+    <table class="spec-table">
+        <tr><th>API</th><th>What It Does</th><th>Free Tier</th><th>Auth</th></tr>
+        <tr><td><strong>Hugging Face Inference API</strong></td><td>Run any public model on HF's servers</td><td>Rate-limited, generous for small use</td><td>HF token</td></tr>
+        <tr><td><strong>LibreTranslate</strong></td><td>Open-source translation</td><td>Unlimited (self-hosted) or limited (public)</td><td>Optional key</td></tr>
+        <tr><td><strong>DictionaryAPI</strong></td><td>Word definitions, phonetics, examples</td><td>Unlimited, no key needed</td><td>None</td></tr>
+        <tr><td><strong>Datamuse</strong></td><td>Word relationships, rhymes, synonyms</td><td>100k requests/day</td><td>None</td></tr>
+    </table>
+
+    <h3>Audio and Speech</h3>
+    <table class="spec-table">
+        <tr><th>API</th><th>What It Does</th><th>Free Tier</th><th>Auth</th></tr>
+        <tr><td><strong>Edge TTS (edge-tts Python lib)</strong></td><td>Microsoft's text-to-speech engine</td><td>Unlimited (no key needed)</td><td>None</td></tr>
+        <tr><td><strong>gTTS</strong></td><td>Google Translate TTS</td><td>Unlimited (Python library)</td><td>None</td></tr>
+    </table>
+
+    <div class="callout callout-green">
+        <p><strong>Edge TTS is special.</strong> The <code>edge-tts</code> Python package wraps Microsoft's speech service and requires no API key at all. You <code>pip install edge-tts</code>, call it from your app, and get high-quality speech in dozens of voices and languages. This is how the Edge TTS Space on the <a href="index.html">leaderboard</a> works. It's one of the most powerful free tools available to you.</p>
+    </div>
+
+    <h3>News and Data</h3>
+    <table class="spec-table">
+        <tr><th>API</th><th>What It Does</th><th>Free Tier</th><th>Auth</th></tr>
+        <tr><td><strong>GNews</strong></td><td>World news search and headlines</td><td>100 requests/day</td><td>API key</td></tr>
+        <tr><td><strong>NewsAPI.org</strong></td><td>News search across 80k+ sources</td><td>100 requests/day (dev only)</td><td>API key</td></tr>
+        <tr><td><strong>Open-Meteo</strong></td><td>Weather forecasts and historical data</td><td>Unlimited, no key</td><td>None</td></tr>
+        <tr><td><strong>REST Countries</strong></td><td>Country data (population, languages, flags)</td><td>Unlimited, no key</td><td>None</td></tr>
+        <tr><td><strong>Wikipedia API</strong></td><td>Article summaries and search</td><td>Unlimited (be polite with rate)</td><td>None</td></tr>
+    </table>
+
+    <h3>Images and Media</h3>
+    <table class="spec-table">
+        <tr><th>API</th><th>What It Does</th><th>Free Tier</th><th>Auth</th></tr>
+        <tr><td><strong>Unsplash</strong></td><td>High-quality stock photos</td><td>50 requests/hour</td><td>API key</td></tr>
+        <tr><td><strong>Pexels</strong></td><td>Free stock photos and videos</td><td>200 requests/hour</td><td>API key</td></tr>
+        <tr><td><strong>Lorem Picsum</strong></td><td>Random placeholder images</td><td>Unlimited, no key</td><td>None</td></tr>
+    </table>
+
+    <h3>The Hugging Face Inference API</h3>
+    <p>This one deserves special attention. Hugging Face itself provides a free Inference API that lets you run <strong>any public model</strong> on their servers. You send a request with your input, they run the model on their hardware (often GPU), and send the result back.</p>
+    <div class="code-block">import requests
+import os
+
+API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-mnli"
+headers = {"Authorization": f"Bearer {os.environ.get('HF_TOKEN')}"}
+
+def classify(text, labels):
+    payload = {
+        "inputs": text,
+        "parameters": {"candidate_labels": labels.split(",")}
+    }
+    response = requests.post(API_URL, headers=headers, json=payload)
+    return response.json()
+</div>
+    <p>This means you can build a Space that uses a large zero-shot classification model &mdash; running on HF's GPUs &mdash; from a free CPU Space. Your Space is just the interface. The model runs elsewhere.</p>
+
+    <div class="callout callout-orange">
+        <p><strong>Rate limits:</strong> The free HF Inference API is rate-limited and may queue your request if the model isn't loaded. For a student project or demo, this is fine. For a production tool used by hundreds of people, you'd need a paid plan or a different approach.</p>
+    </div>
+
+    <h2>The API-Wrapper Architecture</h2>
+    <p>When you build an API-powered Space, your code has a clear structure:</p>
+    <ol>
+        <li><strong>Input handling</strong> &mdash; Gradio collects user input (text, files, selections)</li>
+        <li><strong>API call</strong> &mdash; Your function sends a request to the external service</li>
+        <li><strong>Response parsing</strong> &mdash; You extract the useful data from the API response</li>
+        <li><strong>Output formatting</strong> &mdash; You present the result in a clean, readable way</li>
+    </ol>
+    <p>Your value as a builder isn't in running the model. It's in <strong>choosing the right API</strong>, <strong>designing the interface</strong>, <strong>handling errors gracefully</strong>, and <strong>presenting results clearly</strong>. That's product design, and it's a real skill.</p>
+
+    <h2>Combining APIs</h2>
+    <p>The most interesting API-powered Spaces combine multiple APIs. For example:</p>
+    <ul>
+        <li>A <strong>news analyzer</strong> that fetches headlines from GNews, then classifies their sentiment using the HF Inference API</li>
+        <li>A <strong>travel tool</strong> that looks up a country via REST Countries and weather via Open-Meteo, then summarizes the result</li>
+        <li>An <strong>image captioner</strong> that fetches a photo from Unsplash and describes it using the HF Inference API with a vision model</li>
+    </ul>
+    <p>Each of these uses zero local compute. All the ML runs on HF's Inference API. All the data comes from free APIs. Your Space is the glue.</p>
+
+    <h2>Managing API Keys</h2>
+    <p>Some APIs require a key (usually free to get). Here's the workflow:</p>
+    <ol>
+        <li><strong>Sign up</strong> for the API and get your key</li>
+        <li><strong>Add it as a Secret</strong> in your Space settings on Hugging Face (Settings &rarr; Variables and secrets &rarr; New secret)</li>
+        <li><strong>Read it in your code</strong> with <code>os.environ.get("SECRET_NAME")</code></li>
+    </ol>
+    <p>Never put API keys in your source code. The git history is public.</p>
+
+    <h2>What to Watch Out For</h2>
+    <ul>
+        <li><strong>Rate limits</strong> &mdash; Every free API has limits. Check the docs and design your Space to stay within them. Show a friendly message if the limit is hit.</li>
+        <li><strong>API changes</strong> &mdash; Free APIs can change their terms, rate limits, or response format at any time. Your Space might break if the API changes.</li>
+        <li><strong>Latency</strong> &mdash; API calls add network round-trip time. A local model gives instant results; an API call might take 1-3 seconds. Set user expectations with loading indicators.</li>
+        <li><strong>Error handling</strong> &mdash; APIs can be down, return errors, or return unexpected data. Always wrap API calls in try/except and give users a clear message when something goes wrong.</li>
+    </ul>
+
+    <div class="callout">
+        <p><strong>Design principle:</strong> An API-powered Space should feel like a local tool. The user shouldn't have to think about where the computation is happening. If the API is slow, show a loading state. If it errors, show a helpful message. If the rate limit is hit, tell the user to try again later. Hide the plumbing, show the polish.</p>
+    </div>
+
+    <h2>Spaces on the Leaderboard That Use This Pattern</h2>
+    <ul>
+        <li><strong><a href="https://huggingface.co/spaces/innoai/Edge-TTS-Text-to-Speech">Edge TTS</a></strong> &mdash; Microsoft's speech API via the <code>edge-tts</code> library. No key needed.</li>
+        <li><strong><a href="https://huggingface.co/spaces/NihalGazi/Text-To-Speech-Unlimited">Text-To-Speech Unlimited</a></strong> &mdash; API-based TTS with no character limits.</li>
+        <li><strong><a href="https://huggingface.co/spaces/abidlabs/gradio-playground-bot">Gradio Playground Bot</a></strong> &mdash; Uses an LLM API to generate Gradio app code.</li>
+    </ul>
+    <p>Study their code. See how they handle API calls, format responses, and manage errors. Then build your own.</p>
+    <p>Ready to actually build something? <a href="build.html">Chapter 5</a> walks you through creating your first Space from scratch.</p>
+</div>
+
+<div class="chapter-nav">
+    <a href="gpu-vs-cpu.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">3. GPU vs CPU</div></a>
+    <a href="build.html" class="next"><div class="nav-dir">Next chapter</div><div class="nav-title">5. Build Your First Space</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

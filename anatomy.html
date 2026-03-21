@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 2: Anatomy of a Space — SpaceCraft</title>
+    <meta name="description" content="What goes into building a Hugging Face Space: SDKs, app files, config, dependencies, and more.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .chapter-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.2rem; font-weight: 600; margin-top: 40px; margin-bottom: 12px; }
+        .article h3 { font-size: 1rem; font-weight: 600; margin-top: 24px; margin-bottom: 8px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 6px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        code { font-family: 'DM Mono', monospace; font-size: 0.84em; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text); }
+        .code-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 20px; margin: 16px 0; overflow-x: auto; font-family: 'DM Mono', monospace; font-size: 0.82rem; line-height: 1.6; color: var(--text-muted); white-space: pre; }
+        .spec-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.85rem; }
+        .spec-table th, .spec-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+        .spec-table th { font-weight: 600; color: var(--text); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .spec-table td { color: var(--text-muted); }
+        .spec-table tr:last-child td { border-bottom: none; }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; }
+        .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+        footer a:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="index.html" class="nav-brand">SpaceCraft</a>
+    <a href="index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="why-cpu.html">1. Why CPU-Only</a>
+    <a href="anatomy.html" class="active">2. Anatomy</a>
+    <a href="gpu-vs-cpu.html">3. GPU vs CPU</a>
+    <a href="free-apis.html">4. Free APIs</a>
+    <a href="build.html">5. Build</a>
+    <a href="finding-spaces.html">6. Finding Spaces</a>
+</nav>
+
+<div class="article">
+    <div class="chapter-label">Chapter 2</div>
+    <h1>Anatomy of a Hugging Face Space</h1>
+    <p class="subtitle">A Space is a git repo that Hugging Face turns into a live web app. Here's what's inside.</p>
+
+    <h2>The Core Idea</h2>
+    <p>A Hugging Face Space is a <strong>git repository</strong> that Hugging Face automatically builds and deploys as a <strong>web application</strong>. You push code, HF builds a Docker container from it, and your app goes live at <code>huggingface.co/spaces/your-username/your-space</code>.</p>
+    <p>No server configuration. No Docker knowledge required. No domain setup. You push, it deploys.</p>
+
+    <h2>Choosing an SDK</h2>
+    <p>When you create a Space, you pick an SDK. This determines what framework runs your app.</p>
+
+    <table class="spec-table">
+        <tr><th>SDK</th><th>Language</th><th>Best For</th></tr>
+        <tr><td><strong>Gradio</strong></td><td>Python</td><td>ML demos, model interfaces, data tools</td></tr>
+        <tr><td><strong>Streamlit</strong></td><td>Python</td><td>Data dashboards, interactive reports</td></tr>
+        <tr><td><strong>Static</strong></td><td>HTML/JS/CSS</td><td>Landing pages, client-side apps, docs</td></tr>
+        <tr><td><strong>Docker</strong></td><td>Any</td><td>Custom setups, non-Python apps</td></tr>
+    </table>
+
+    <p><strong>Start with Gradio.</strong> It's the most common SDK on Hugging Face, it has the best documentation, and nearly every Space on the <a href="index.html">leaderboard</a> uses it. Gradio gives you pre-built UI components for file uploads, text inputs, sliders, audio players, image displays, and more.</p>
+
+    <h3>Gradio vs Streamlit</h3>
+    <p>Both turn Python scripts into web apps. <strong>Gradio is designed for ML interfaces</strong> (input goes in, model output comes out). <strong>Streamlit is designed for data dashboards</strong> (explore and visualize data). Most HF Spaces use Gradio because most Spaces are model demos.</p>
+
+    <h3>When to Use Static</h3>
+    <p>If your Space doesn't need a Python backend &mdash; like a leaderboard that displays pre-computed data, or a documentation site &mdash; use the Static SDK. It serves plain HTML/CSS/JS with no server process, starts instantly, and uses zero compute. (SpaceCraft itself could be a Static Space.)</p>
+
+    <h2>The App File</h2>
+    <p>Every Gradio or Streamlit Space needs an entry point:</p>
+    <ul>
+        <li><strong>Gradio / Streamlit:</strong> <code>app.py</code></li>
+        <li><strong>Static:</strong> <code>index.html</code></li>
+    </ul>
+
+    <p>A minimal Gradio Space:</p>
+    <div class="code-block">import gradio as gr
+
+def greet(name):
+    return f"Hello, {name}!"
+
+demo = gr.Interface(fn=greet, inputs="text", outputs="text")
+demo.launch()</div>
+    <p>That's a complete, deployable Space. Push it to HF and it goes live. <a href="build.html">Chapter 5</a> walks through building something like this step by step.</p>
+
+    <h2>The Configuration File</h2>
+    <p>Every Space has a <code>README.md</code> with YAML frontmatter that configures it:</p>
+    <div class="code-block">---
+title: My Space
+emoji: &#x1F52C;
+colorFrom: blue
+colorTo: green
+sdk: gradio
+sdk_version: 5.0.0
+app_file: app.py
+pinned: false
+---</div>
+    <p>This tells Hugging Face which SDK to use, what version, and which file to run. The <code>emoji</code>, <code>colorFrom</code>, and <code>colorTo</code> control how your Space looks in search results.</p>
+
+    <h2>Dependencies</h2>
+    <p>If your Space needs Python packages beyond Gradio, list them in <code>requirements.txt</code>:</p>
+    <div class="code-block">transformers
+torch
+sentencepiece</div>
+
+    <div class="callout">
+        <p><strong>CPU tip:</strong> Package size matters. PyTorch alone is ~800 MB. If you only need inference, consider <code>onnxruntime</code> instead (much smaller). Or if you're using a <a href="free-apis.html">free API</a>, you may not need a model framework at all &mdash; just <code>requests</code> and <code>gradio</code>.</p>
+    </div>
+
+    <h2>Secrets and Environment Variables</h2>
+    <p>If your Space calls an external API (see <a href="free-apis.html">Chapter 4</a>), you'll likely need API keys. Store them as <strong>Secrets</strong> in your Space settings &mdash; they're injected as environment variables at runtime.</p>
+    <div class="code-block">import os
+api_key = os.environ.get("MY_API_KEY")</div>
+    <p>Never put API keys directly in your code. Secrets are encrypted and hidden from the git history.</p>
+
+    <h2>Persistent Storage</h2>
+    <p>By default, Space storage is <strong>ephemeral</strong> &mdash; anything written to disk disappears when the Space restarts. Most CPU Spaces on the leaderboard don't need persistent storage. They process inputs in real-time and return results immediately.</p>
+    <p>If you're building a leaderboard or dashboard, the data is usually stored in the git repo itself (as a CSV or JSON file) and updated via commits.</p>
+
+    <h2>The Minimal CPU Space</h2>
+    <p>Here's what the simplest useful CPU Space looks like:</p>
+    <div class="code-block">my-space/
+&#x251C;&#x2500;&#x2500; README.md          # YAML config (sdk, title, emoji)
+&#x251C;&#x2500;&#x2500; app.py             # Your Gradio or Streamlit app
+&#x2514;&#x2500;&#x2500; requirements.txt   # Python dependencies (if any)</div>
+    <p>Three files. That's all you need to have a live, public, shareable application. The question isn't whether you have enough resources. The question is: <strong>what will you build?</strong></p>
+    <p>Before you answer that, you should understand what "CPU" and "GPU" actually mean for your Space. That's <a href="gpu-vs-cpu.html">Chapter 3</a>.</p>
+</div>
+
+<div class="chapter-nav">
+    <a href="why-cpu.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">1. Why CPU-Only</div></a>
+    <a href="gpu-vs-cpu.html" class="next"><div class="nav-dir">Next chapter</div><div class="nav-title">3. GPU vs CPU</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

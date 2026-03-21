@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 5: Build Your First Space — SpaceCraft</title>
+    <meta name="description" content="Step-by-step walkthrough: create a Hugging Face Space on free CPU, from zero to deployed.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-resource: #6ba3d6; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .chapter-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.2rem; font-weight: 600; margin-top: 40px; margin-bottom: 12px; }
+        .article h3 { font-size: 1rem; font-weight: 600; margin-top: 24px; margin-bottom: 8px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 6px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout-green { border-left: 3px solid var(--accent-useful); }
+        .callout-blue { border-left: 3px solid var(--accent-resource); }
+        code { font-family: 'DM Mono', monospace; font-size: 0.84em; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text); }
+        .code-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 20px; margin: 16px 0; overflow-x: auto; font-family: 'DM Mono', monospace; font-size: 0.82rem; line-height: 1.6; color: var(--text-muted); white-space: pre; }
+        .step-number { display: inline-block; width: 28px; height: 28px; background: var(--surface-2); border-radius: 50%; text-align: center; line-height: 28px; font-family: 'DM Mono', monospace; font-size: 0.78rem; font-weight: 500; color: var(--text-muted); margin-right: 8px; vertical-align: middle; }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; }
+        .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+        footer a:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="index.html" class="nav-brand">SpaceCraft</a>
+    <a href="index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="why-cpu.html">1. Why CPU-Only</a>
+    <a href="anatomy.html">2. Anatomy</a>
+    <a href="gpu-vs-cpu.html">3. GPU vs CPU</a>
+    <a href="free-apis.html">4. Free APIs</a>
+    <a href="build.html" class="active">5. Build</a>
+    <a href="finding-spaces.html">6. Finding Spaces</a>
+</nav>
+
+<div class="article">
+    <div class="chapter-label">Chapter 5</div>
+    <h1>Build Your First Space</h1>
+    <p class="subtitle">From zero to a live, deployed application. Three paths depending on what you want to build.</p>
+
+    <h2>Before You Start</h2>
+    <p>You need a free <a href="https://huggingface.co/join">Hugging Face account</a>. That's it. No local Python installation, no terminal, no git knowledge. You can build and deploy a Space entirely through the Hugging Face web interface.</p>
+
+    <h2>Creating a Space</h2>
+    <p><span class="step-number">1</span> Go to <a href="https://huggingface.co/new-space">huggingface.co/new-space</a>.</p>
+    <p><span class="step-number">2</span> Give your Space a name. Keep it short and descriptive: <code>mood-meter</code>, <code>headline-finder</code>, <code>text-translator</code>.</p>
+    <p><span class="step-number">3</span> Choose <strong>Gradio</strong> as the SDK.</p>
+    <p><span class="step-number">4</span> Leave the hardware as <strong>CPU Basic (Free)</strong>.</p>
+    <p><span class="step-number">5</span> Click <strong>Create Space</strong>.</p>
+    <p>You now have a live URL. The Space is empty, but it exists. Time to add code.</p>
+
+    <h2>Three Paths</h2>
+    <p>Below are three complete Spaces you can build right now. Each one teaches a different CPU strategy from the earlier chapters. Pick the one that interests you most.</p>
+
+    <h2>Path A: The Classifier (Local Model)</h2>
+    <p>This Space runs a small sentiment analysis model directly on CPU. It demonstrates the <a href="gpu-vs-cpu.html#specialized-models">specialized model strategy</a> from Chapter 3.</p>
+
+    <h3>app.py</h3>
+    <div class="code-block">import gradio as gr
+from transformers import pipeline
+
+classifier = pipeline(
+    "sentiment-analysis",
+    model="distilbert-base-uncased-finetuned-sst-2-english"
+)
+
+def analyze(text):
+    if not text.strip():
+        return "Please enter some text."
+    result = classifier(text)[0]
+    label = result["label"]
+    score = round(result["score"] * 100, 1)
+    return f"**{label}** ({score}% confidence)"
+
+demo = gr.Interface(
+    fn=analyze,
+    inputs=gr.Textbox(
+        label="Enter text",
+        placeholder="Type a sentence to analyze...",
+        lines=3
+    ),
+    outputs=gr.Markdown(label="Result"),
+    title="Mood Meter",
+    description="Analyze the sentiment of any text. "
+                "Uses DistilBERT (67M parameters) running on free CPU."
+)
+demo.launch()</div>
+
+    <h3>requirements.txt</h3>
+    <div class="code-block">transformers
+torch</div>
+
+    <div class="callout callout-blue">
+        <p><strong>Why this works on CPU:</strong> DistilBERT has 67 million parameters &mdash; well under the 1B threshold from <a href="gpu-vs-cpu.html#model-sizes">Chapter 3</a>. It loads in about 250 MB of RAM and classifies text in under a second on CPU. It's a perfect example of a small, specialized model.</p>
+    </div>
+
+    <h2>Path B: The API Tool (Free API)</h2>
+    <p>This Space calls an external API to get data, then displays it. No ML model at all. It demonstrates the <a href="free-apis.html">API wrapper pattern</a> from Chapter 4.</p>
+
+    <h3>app.py</h3>
+    <div class="code-block">import gradio as gr
+import requests
+
+def lookup_word(word):
+    if not word.strip():
+        return "Please enter a word."
+    url = f"https://api.dictionaryapi.dev/api/v2/entries/en/{word.strip()}"
+    try:
+        response = requests.get(url, timeout=10)
+        if response.status_code == 404:
+            return f"**{word}** not found in the dictionary."
+        data = response.json()[0]
+    except Exception:
+        return "Something went wrong. Please try again."
+
+    output = f"# {data['word']}\n\n"
+
+    for meaning in data.get("meanings", []):
+        part = meaning.get("partOfSpeech", "")
+        output += f"### {part}\n\n"
+        for defn in meaning.get("definitions", [])[:3]:
+            output += f"- {defn['definition']}\n"
+            if defn.get("example"):
+                output += f"  *Example: {defn['example']}*\n"
+        output += "\n"
+
+    return output
+
+demo = gr.Interface(
+    fn=lookup_word,
+    inputs=gr.Textbox(label="Enter a word", placeholder="e.g. serendipity"),
+    outputs=gr.Markdown(label="Definition"),
+    title="Dictionary Lookup",
+    description="Look up any English word. "
+                "Uses the free Dictionary API — no API key needed."
+)
+demo.launch()</div>
+
+    <h3>requirements.txt</h3>
+    <div class="code-block">gradio
+requests</div>
+
+    <div class="callout callout-green">
+        <p><strong>Why this is great for learning:</strong> No ML model, no API key, no secrets to manage. The Dictionary API is completely free and keyless. You can go from empty Space to working tool in five minutes. And it's genuinely useful &mdash; people actually look up words.</p>
+    </div>
+
+    <h2>Path C: The Dashboard (No Inference)</h2>
+    <p>This Space displays data in an interactive table. No model, no API &mdash; just data visualization. It demonstrates the <a href="gpu-vs-cpu.html#no-inference">no-inference pattern</a> from Chapter 3.</p>
+
+    <h3>app.py</h3>
+    <div class="code-block">import gradio as gr
+import pandas as pd
+
+# Data could come from a CSV file in your repo
+data = {
+    "Model": [
+        "DistilBERT", "BERT-base", "RoBERTa-base",
+        "ALBERT-base", "TinyBERT", "MobileBERT"
+    ],
+    "Parameters": [
+        "67M", "110M", "125M", "12M", "15M", "25M"
+    ],
+    "Task": [
+        "Sentiment", "NER", "Classification",
+        "QA", "Distillation", "Mobile NLP"
+    ],
+    "CPU Friendly": [
+        "Yes", "Yes", "Yes", "Very", "Very", "Very"
+    ],
+    "Notes": [
+        "Most popular small model",
+        "The original transformer",
+        "Better training procedure",
+        "Parameter sharing = tiny",
+        "Distilled from BERT",
+        "Designed for phones"
+    ]
+}
+
+df = pd.DataFrame(data)
+
+def search_models(query):
+    if not query.strip():
+        return df
+    mask = df.apply(
+        lambda row: query.lower() in row.to_string().lower(),
+        axis=1
+    )
+    return df[mask]
+
+demo = gr.Interface(
+    fn=search_models,
+    inputs=gr.Textbox(
+        label="Search",
+        placeholder="Filter models (e.g. 'tiny', 'sentiment')..."
+    ),
+    outputs=gr.Dataframe(label="CPU-Friendly Models"),
+    title="Small Model Explorer",
+    description="Browse models that run well on free CPU. "
+                "All under 130M parameters."
+)
+demo.launch()</div>
+
+    <h3>requirements.txt</h3>
+    <div class="code-block">gradio
+pandas</div>
+
+    <p>This pattern scales. Replace the hardcoded data with a CSV file in your repo, and you have a leaderboard. Add more columns, sorting, and filtering, and you're building something like the Open ASR Leaderboard (1,200+ likes on the <a href="index.html">SpaceCraft leaderboard</a>).</p>
+
+    <h2>Deploying Your Code</h2>
+    <p>Once you've written your files, you need to get them into your Space. Two options:</p>
+
+    <h3>Option 1: The Web Editor</h3>
+    <p>On your Space page, click <strong>Files</strong>, then <strong>Add file</strong> &rarr; <strong>Create a new file</strong>. Paste your code, name the file <code>app.py</code>, and commit. Do the same for <code>requirements.txt</code>. Your Space will start building automatically.</p>
+
+    <h3>Option 2: Git</h3>
+    <p>If you're comfortable with git, clone your Space repo and push files the normal way:</p>
+    <div class="code-block">git clone https://huggingface.co/spaces/YOUR-USERNAME/YOUR-SPACE
+cd YOUR-SPACE
+# add your app.py and requirements.txt
+git add .
+git commit -m "Initial app"
+git push</div>
+
+    <h2>What Happens After You Push</h2>
+    <ol>
+        <li>Hugging Face detects the new commit</li>
+        <li>It installs your dependencies from <code>requirements.txt</code></li>
+        <li>It runs your <code>app.py</code></li>
+        <li>Your Space goes live at its URL</li>
+    </ol>
+    <p>First build takes a few minutes (installing packages). After that, updates are faster. If the build fails, check the <strong>Logs</strong> tab on your Space page &mdash; it shows exactly what went wrong.</p>
+
+    <div class="callout">
+        <p><strong>Expect errors.</strong> Your first deploy will probably fail. A misspelled package name, a missing import, a function that doesn't return the right type. This is normal. Read the error log, fix the issue, push again. Every Space on the <a href="index.html">leaderboard</a> went through this cycle.</p>
+    </div>
+
+    <h2>After Your First Space</h2>
+    <p>Once you have something working:</p>
+    <ul>
+        <li><strong>Share the URL.</strong> Every Space has a public link. Show it to someone.</li>
+        <li><strong>Add it to a Collection.</strong> On Hugging Face, create a Collection and add your Space to it. This is the start of your portfolio.</li>
+        <li><strong>Study the next level.</strong> Browse the <a href="index.html">leaderboard</a> and pick a Space that does something similar to yours but better. Read its code. What did they do differently? <a href="finding-spaces.html">Chapter 6</a> teaches you how to learn from other people's Spaces systematically.</li>
+        <li><strong>Iterate.</strong> The best Spaces weren't built in one pass. They were built, tested, shown to someone, revised, and polished. Your first version doesn't have to be your last.</li>
+    </ul>
+</div>
+
+<div class="chapter-nav">
+    <a href="free-apis.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">4. Free APIs</div></a>
+    <a href="finding-spaces.html" class="next"><div class="nav-dir">Next chapter</div><div class="nav-title">6. Finding Spaces</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>
