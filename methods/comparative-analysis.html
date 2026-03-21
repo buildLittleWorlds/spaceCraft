@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparative Analysis — SpaceCraft Methods</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-resource: #6ba3d6; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .method-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-craft); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.1rem; font-weight: 600; margin-top: 36px; margin-bottom: 12px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 8px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .space-link { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; font-size: 0.82rem; color: var(--text); text-decoration: none; transition: all 0.2s; margin: 2px; }
+        .space-link:hover { border-color: var(--border-hover); text-decoration: none; }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; }
+        .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="../index.html" class="nav-brand">SpaceCraft</a>
+    <a href="../index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="../why-cpu.html">1</a>
+    <a href="../anatomy.html">2</a>
+    <a href="../gpu-vs-cpu.html">3</a>
+    <a href="../free-apis.html">4</a>
+    <a href="../build.html">5</a>
+    <a href="../finding-spaces.html">6</a>
+    <a href="../pipelines.html">7</a>
+    <a href="../design.html">8</a>
+    <span class="nav-sep">|</span>
+    <a href="../methods.html" class="active">Methods</a>
+</nav>
+
+<div class="article">
+    <div class="method-label">Method 1 &middot; Session 2</div>
+    <h1>Comparative Analysis</h1>
+    <p class="subtitle">Test the same question with different tools. The disagreements tell you more than the agreements.</p>
+
+    <h2>What It Is</h2>
+    <p>Comparative analysis means running the same input through two or more tools that approach the problem differently, then studying where they agree, where they disagree, and why. The goal isn't to find the "right" answer. It's to understand what each tool can and can't see.</p>
+    <p>Researchers and engineers use this constantly. When evaluating a new model, they don't just test it alone — they compare it to baselines. When choosing between two APIs, they run the same data through both. The comparison reveals strengths and blind spots that testing alone would miss.</p>
+
+    <h2>When You Use It</h2>
+    <p>Use comparative analysis when you want to understand <strong>how a tool's design shapes its output</strong>. If two sentiment models disagree on whether a sentence is "happy" or "excited," the disagreement tells you something important: those models define emotion differently. That's not a bug. That's the insight.</p>
+
+    <h2>The Steps</h2>
+    <ol>
+        <li><strong>Pick your question.</strong> What are you trying to understand? Example: "How well can different OCR tools handle messy handwriting?"</li>
+        <li><strong>Pick at least two tools</strong> that address the question but differ in training data, architecture, or output format.</li>
+        <li><strong>Hold the input constant.</strong> Run identical inputs through each tool. Same image, same text, same file.</li>
+        <li><strong>Record what each tool says.</strong> Don't just note the final answer — look at confidence scores, alternative options, and formatting differences.</li>
+        <li><strong>Analyze the disagreements.</strong> When the tools give different answers, ask: why? Read the model cards. Check the training data. The divergence points are where the learning happens.</li>
+    </ol>
+
+    <h2>See It on SpaceCraft</h2>
+    <p>Try these Spaces from the <a href="../index.html">leaderboard</a>:</p>
+    <p>
+        <a href="https://huggingface.co/spaces/hexgrad/Kokoro-TTS" class="space-link" target="_blank">Kokoro TTS</a>
+        <a href="https://huggingface.co/spaces/innoai/Edge-TTS-Text-to-Speech" class="space-link" target="_blank">Edge TTS</a>
+    </p>
+    <p><strong>What to try:</strong> Type the same sentence into both TTS Spaces. Same words, same meaning. Listen to the output. One runs a local model; the other calls Microsoft's API. How do they differ in voice quality, speed, naturalness? The difference isn't about which is "better" — it's about what each system's architecture prioritizes.</p>
+    <p>
+        <a href="https://huggingface.co/spaces/prithivMLmods/CORE-OCR" class="space-link" target="_blank">core OCR</a>
+    </p>
+    <p><strong>What to try:</strong> core OCR lets you compare multiple OCR models on the same document. Upload an image with text and see how different models read it. Where do they agree? Where do they diverge? The divergence points reveal what each model was optimized for.</p>
+
+    <h2>What You'll Discover</h2>
+    <p>The key insight from comparative analysis is that <strong>disagreements reveal design choices, not errors</strong>. When two tools give different answers to the same input, it's usually because they define the problem differently. One sentiment model sees 2 emotions; another sees 28. One OCR model is optimized for printed text; another for handwriting. The "right" answer depends on what you're measuring — and that choice is called <em>operationalization</em>.</p>
+
+    <div class="callout">
+        <p><strong>Try it yourself:</strong> Pick any two Spaces from the <a href="../index.html">leaderboard</a> that do related tasks (e.g., two NLP tools, or two OCR tools). Run the same input through both. Write down three differences in their output. For each difference, hypothesize why — what's different about how they were built? Then check the model cards to see if you're right.</p>
+    </div>
+</div>
+
+<div class="chapter-nav">
+    <a href="../methods.html" class="prev"><div class="nav-dir">Back to</div><div class="nav-title">All Methods</div></a>
+    <a href="adversarial-testing.html" class="next"><div class="nav-dir">Next method</div><div class="nav-title">2. Adversarial Testing</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

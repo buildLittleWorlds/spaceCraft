@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fairness Audit — SpaceCraft Methods</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-craft: #d4894a; --accent-useful: #7bb87a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .method-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-craft); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.1rem; font-weight: 600; margin-top: 36px; margin-bottom: 12px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 8px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout-green { border-left: 3px solid var(--accent-useful); }
+        .space-link { display: inline-flex; padding: 4px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; font-size: 0.82rem; color: var(--text); text-decoration: none; transition: all 0.2s; margin: 2px; }
+        .space-link:hover { border-color: var(--border-hover); text-decoration: none; }
+        .pair-example { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 20px; margin: 16px 0; font-size: 0.88rem; }
+        .pair-example .pair-a, .pair-example .pair-b { padding: 4px 0; }
+        .pair-example .pair-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-dim); margin-right: 8px; }
+        .pair-example .pair-diff { color: var(--accent-craft); font-weight: 600; }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; } .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="../index.html" class="nav-brand">SpaceCraft</a>
+    <a href="../index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="../why-cpu.html">1</a><a href="../anatomy.html">2</a><a href="../gpu-vs-cpu.html">3</a><a href="../free-apis.html">4</a><a href="../build.html">5</a><a href="../finding-spaces.html">6</a><a href="../pipelines.html">7</a><a href="../design.html">8</a>
+    <span class="nav-sep">|</span>
+    <a href="../methods.html" class="active">Methods</a>
+</nav>
+
+<div class="article">
+    <div class="method-label">Method 6 &middot; Session 7</div>
+    <h1>Fairness Audit</h1>
+    <p class="subtitle">Design paired inputs that differ in only one demographic variable. If the output changes, the model has a bias problem.</p>
+
+    <h2>What It Is</h2>
+    <p>A fairness audit is a systematic test for whether a system treats different groups of people differently when it shouldn't. You create paired inputs that are <strong>identical except for one variable</strong> — a name, a gender pronoun, a role — and check whether the model's output changes. If it does, the model is responding to something that shouldn't matter.</p>
+    <p>This is how researchers, journalists, and regulators test AI systems for discrimination. It's one of the most important methods in applied AI ethics, and you can do it with any text-based Space on the <a href="../index.html">leaderboard</a>.</p>
+
+    <h2>When You Use It</h2>
+    <p>Use a fairness audit whenever a model's output could <strong>affect different people differently</strong>. Sentiment analysis used to screen job applications. Content moderation that might flag some groups more than others. Any system that makes judgments about text written by or about people.</p>
+
+    <h2>The Steps</h2>
+    <ol>
+        <li><strong>Write a base sentence the model handles well.</strong> Start with something neutral where the model gives a clear, confident result.</li>
+        <li><strong>Swap one variable.</strong> Keep everything else identical. Common swaps:
+            <div class="pair-example">
+                <div class="pair-a"><span class="pair-label">A:</span> "<span class="pair-diff">James</span> is a brilliant surgeon who saved three lives today."</div>
+                <div class="pair-b"><span class="pair-label">B:</span> "<span class="pair-diff">Jamila</span> is a brilliant surgeon who saved three lives today."</div>
+            </div>
+            <div class="pair-example">
+                <div class="pair-a"><span class="pair-label">A:</span> "<span class="pair-diff">He</span> is a natural leader who inspires the team."</div>
+                <div class="pair-b"><span class="pair-label">B:</span> "<span class="pair-diff">She</span> is a natural leader who inspires the team."</div>
+            </div>
+            <div class="pair-example">
+                <div class="pair-a"><span class="pair-label">A:</span> "The <span class="pair-diff">doctor</span> made a difficult decision under pressure."</div>
+                <div class="pair-b"><span class="pair-label">B:</span> "The <span class="pair-diff">nurse</span> made a difficult decision under pressure."</div>
+            </div>
+        </li>
+        <li><strong>Compare outputs.</strong> Did the label change? Did the confidence score shift? Even a small shift in confidence on identical-except-for-one-variable sentences is a finding.</li>
+        <li><strong>Document what you find.</strong> If outputs differ, the model is responding to the variable you swapped — and that variable (name, gender, role) shouldn't matter for the task.</li>
+        <li><strong>Ask the stakes question.</strong> If this model were used to screen job applications, grade essays, or moderate content, would this bias cause real harm to real people?</li>
+    </ol>
+
+    <div class="callout callout-green">
+        <p><strong>Important:</strong> Documenting where a model IS fair is just as valuable as documenting where it isn't. If you test 10 name swaps and the output doesn't change, that's a positive finding worth recording. Fairness audits aren't about catching models being bad — they're about knowing where you can and can't trust them.</p>
+    </div>
+
+    <h2>See It on SpaceCraft</h2>
+    <p>
+        <a href="https://huggingface.co/spaces/PirateXX/AI-Content-Detector" class="space-link" target="_blank">AI Content Detector</a>
+    </p>
+    <p><strong>What to try:</strong> Write a paragraph and check whether it's classified as AI or human. Then rewrite the same content in a different style — more formal, more casual, more academic, using different cultural references. Does the "AI vs. human" classification change based on writing style? Whose writing style does the model consider "more human"?</p>
+    <p>
+        <a href="https://huggingface.co/spaces/knowledgator/GLiNER_HandyLab" class="space-link" target="_blank">GLiNER HandyLab</a>
+    </p>
+    <p><strong>What to try:</strong> Use the NER function. Test paired sentences with name swaps: does the model identify "Dr. Smith" and "Dr. Okafor" as the same entity type? What about "chairman" vs. "chairwoman"? The entity extraction task shouldn't be affected by names or gendered titles, but training data patterns can leak through.</p>
+
+    <h2>What You'll Discover</h2>
+    <p>The key insight is that <strong>bias comes from training data, not from the model's intent</strong>. Models have no opinions. They learned patterns from text written by humans, and human text reflects human inequalities. When a model treats "James" and "Jamila" differently on identical sentences, it's reproducing a statistical pattern from its training data — a pattern that reflects real-world disparities in how different names appear in different contexts. Understanding this is the first step toward building systems that are fairer.</p>
+
+    <div class="callout">
+        <p><strong>Try it yourself:</strong> Pick any text-input Space on the <a href="../index.html">leaderboard</a>. Write one sentence. Create 3 variants by swapping only names (keep common names from different cultural backgrounds). Run all 4 versions. Record the outputs in a table. Did anything change? If yes, write one sentence explaining what pattern in the training data might have caused it.</p>
+    </div>
+</div>
+
+<div class="chapter-nav">
+    <a href="external-validity.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">5. External Validity</div></a>
+    <a href="error-propagation.html" class="next"><div class="nav-dir">Next method</div><div class="nav-title">7. Error Propagation</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

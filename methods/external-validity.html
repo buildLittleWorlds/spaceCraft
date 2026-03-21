@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>External Validity — SpaceCraft Methods</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .method-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-craft); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.1rem; font-weight: 600; margin-top: 36px; margin-bottom: 12px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 8px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .space-link { display: inline-flex; padding: 4px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; font-size: 0.82rem; color: var(--text); text-decoration: none; transition: all 0.2s; margin: 2px; }
+        .space-link:hover { border-color: var(--border-hover); text-decoration: none; }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; } .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="../index.html" class="nav-brand">SpaceCraft</a>
+    <a href="../index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="../why-cpu.html">1</a><a href="../anatomy.html">2</a><a href="../gpu-vs-cpu.html">3</a><a href="../free-apis.html">4</a><a href="../build.html">5</a><a href="../finding-spaces.html">6</a><a href="../pipelines.html">7</a><a href="../design.html">8</a>
+    <span class="nav-sep">|</span>
+    <a href="../methods.html" class="active">Methods</a>
+</nav>
+
+<div class="article">
+    <div class="method-label">Method 5 &middot; Session 6</div>
+    <h1>External Validity</h1>
+    <p class="subtitle">Does it work outside the lab? Test a model on data from a completely different world than it was trained on.</p>
+
+    <h2>What It Is</h2>
+    <p>External validity means testing whether results hold up outside the specific conditions they were developed in. A model might ace every test you give it — but if those tests all come from the same domain as its training data, you haven't learned much. The real question is: what happens when you give it data from a world it's never seen?</p>
+    <p>This is called <strong>domain shift</strong>, and it's one of the most important concepts in applied ML. A sentiment model trained on movie reviews may completely fail on legal documents. An OCR model trained on printed English may produce garbage on handwritten Japanese. The gap between "home domain" performance and "away domain" performance reveals overfitting.</p>
+
+    <h2>When You Use It</h2>
+    <p>Use external validity testing whenever you're thinking about <strong>deploying a model in a new context</strong>. The model card says it was trained on tweets? Test it on poetry. Trained on English? Test it on code. Trained on product reviews? Test it on academic papers. The bigger the domain gap, the more you learn about the model's real capabilities.</p>
+
+    <h2>The Steps</h2>
+    <ol>
+        <li><strong>Identify the training domain.</strong> Read the model card. What data was this model trained on? Movie reviews? Tweets? Scientific papers? If there's no model card, look at the examples in the Space — they hint at what the model was designed for.</li>
+        <li><strong>Pick a different domain.</strong> Choose something as far from the training data as possible:
+            <ul>
+                <li>If trained on tweets &rarr; test on poetry or legal text</li>
+                <li>If trained on English &rarr; test on code or another language</li>
+                <li>If trained on product reviews &rarr; test on medical notes</li>
+            </ul>
+        </li>
+        <li><strong>Compare home vs. away performance.</strong> Run 5-10 inputs from the home domain and 5-10 from the away domain. Where does quality drop? How badly?</li>
+        <li><strong>Characterize the failure.</strong> Is it total (useless outside the home domain) or partial (gets the gist but misses nuance)? Partial failures are more interesting — they tell you what the model actually learned that transfers.</li>
+        <li><strong>Predict which domains will be hardest.</strong> Before testing, guess which away domain will cause the biggest drop. Then test and see if you were right. Building this intuition is the real skill.</li>
+    </ol>
+
+    <h2>See It on SpaceCraft</h2>
+    <p>
+        <a href="https://huggingface.co/spaces/Helsinki-NLP/opus-translate" class="space-link" target="_blank">OPUS Translate</a>
+    </p>
+    <p><strong>What to try:</strong> OPUS uses specialized models for each language pair. Try translating formal text, then slang, then poetry. Where does the translation degrade? Slang and poetry are "away domains" for models trained on formal parallel text. The gap reveals what the training data emphasized.</p>
+    <p>
+        <a href="https://huggingface.co/spaces/prithivMLmods/CORE-OCR" class="space-link" target="_blank">core OCR</a>
+        <a href="https://huggingface.co/spaces/lightonai/LightOnOCR-2-1B-Demo" class="space-link" target="_blank">LightOnOCR</a>
+    </p>
+    <p><strong>What to try:</strong> Upload a clean, printed document (home domain). Then upload a photo of a handwritten note, a screenshot with unusual fonts, or a document in a non-Latin script. The performance gap between clean and messy input is domain shift in action.</p>
+
+    <h2>What You'll Discover</h2>
+    <p>The key insight is that <strong>domain shift reveals what a model actually learned vs. what it memorized</strong>. A model that fails completely outside its training domain learned surface patterns specific to that data. A model that degrades gracefully learned something more general. On the <a href="../index.html">SpaceCraft leaderboard</a>, the Spaces tagged with "small specialized model" are the ones most vulnerable to domain shift — their specialization is both their strength (fast, focused) and their weakness (narrow).</p>
+
+    <div class="callout">
+        <p><strong>Try it yourself:</strong> Pick an OCR or NLP Space from the <a href="../index.html">leaderboard</a>. Find the model card (click through to the model page on HF). Read what data it was trained on. Then craft 3 inputs from a completely different domain. Before running them, predict: will the Space fail completely, partially, or handle it fine? Run them and compare your prediction to reality.</p>
+    </div>
+</div>
+
+<div class="chapter-nav">
+    <a href="parameter-sweep.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">4. Parameter Sweep</div></a>
+    <a href="fairness-audit.html" class="next"><div class="nav-dir">Next method</div><div class="nav-title">6. Fairness Audit</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

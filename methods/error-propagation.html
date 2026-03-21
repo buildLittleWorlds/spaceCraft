@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Propagation — SpaceCraft Methods</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-craft: #d4894a; --accent-resource: #6ba3d6; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .method-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-craft); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.1rem; font-weight: 600; margin-top: 36px; margin-bottom: 12px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 8px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout-blue { border-left: 3px solid var(--accent-resource); }
+        .space-link { display: inline-flex; padding: 4px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; font-size: 0.82rem; color: var(--text); text-decoration: none; transition: all 0.2s; margin: 2px; }
+        .space-link:hover { border-color: var(--border-hover); text-decoration: none; }
+        .pipeline-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0; text-align: center; font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--text-muted); }
+        .pipeline-diagram .step { display: inline-block; padding: 6px 14px; background: var(--surface-2); border-radius: var(--radius-sm); margin: 4px; }
+        .pipeline-diagram .arrow { display: inline-block; margin: 0 6px; color: var(--text-dim); }
+        .pipeline-diagram .broken { background: #fde8e8; color: #c53030; }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; } .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="../index.html" class="nav-brand">SpaceCraft</a>
+    <a href="../index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="../why-cpu.html">1</a><a href="../anatomy.html">2</a><a href="../gpu-vs-cpu.html">3</a><a href="../free-apis.html">4</a><a href="../build.html">5</a><a href="../finding-spaces.html">6</a><a href="../pipelines.html">7</a><a href="../design.html">8</a>
+    <span class="nav-sep">|</span>
+    <a href="../methods.html" class="active">Methods</a>
+</nav>
+
+<div class="article">
+    <div class="method-label">Method 7 &middot; Session 8</div>
+    <h1>Error Propagation</h1>
+    <p class="subtitle">Break step 1 on purpose. Then watch the damage cascade through every step that follows.</p>
+
+    <h2>What It Is</h2>
+    <p>Error propagation means tracing how a mistake in one part of a system causes mistakes in every part after it. In a <a href="../pipelines.html">multi-model pipeline</a>, the output of Model 1 becomes the input of Model 2. If Model 1 is wrong, Model 2 has no way to know — it just processes whatever it receives. The error cascades forward, often getting worse at each step.</p>
+    <p>This is how real production systems fail. A self-driving car's camera misreads a sign, the planning module makes a bad decision based on the misread, and the car turns the wrong way. Each component worked correctly on its input — but the input was corrupted. Understanding error propagation is how you build systems that fail gracefully instead of catastrophically.</p>
+
+    <h2>When You Use It</h2>
+    <p>Use error propagation testing whenever a system has <strong>more than one step</strong> — any time one model's output feeds into another model, API, or decision. This includes any Space that chains models together, combines an API with a classifier, or processes data through multiple stages.</p>
+
+    <h2>The Steps</h2>
+    <ol>
+        <li><strong>Map the chain.</strong> Draw every step: what goes in, what comes out, which model or API sits in between. For example:
+
+            <div class="pipeline-diagram">
+                <span class="step">Image</span>
+                <span class="arrow">&rarr;</span>
+                <span class="step">Caption model</span>
+                <span class="arrow">&rarr;</span>
+                <span class="step">Caption text</span>
+                <span class="arrow">&rarr;</span>
+                <span class="step">Sentiment model</span>
+                <span class="arrow">&rarr;</span>
+                <span class="step">Mood label</span>
+            </div>
+        </li>
+        <li><strong>Break step 1 on purpose.</strong> Feed the first model an input you know will cause trouble — an image it can't caption well, text in a language it doesn't know, an edge case from <a href="adversarial-testing.html">adversarial testing</a>.</li>
+        <li><strong>Trace the error forward.</strong> Feed that flawed output into step 2 without correcting it. Then into step 3. At each stage, record:
+            <ul>
+                <li>Does the error get worse, stay the same, or accidentally get corrected?</li>
+                <li>Can you tell from the final output that step 1 was the problem?</li>
+            </ul>
+
+            <div class="pipeline-diagram">
+                <span class="step broken">Bad image</span>
+                <span class="arrow">&rarr;</span>
+                <span class="step broken">Wrong caption</span>
+                <span class="arrow">&rarr;</span>
+                <span class="step broken">Wrong mood</span>
+            </div>
+        </li>
+        <li><strong>Find the fragile points.</strong> Which connections in the chain are most vulnerable? Where does one bad output cause the most downstream damage?</li>
+        <li><strong>Trace backward from the final output.</strong> When you see a wrong final result, resist the urge to fix the last step. Instead, trace backward: was the input to the last step already wrong? Was the input to the step before that wrong? The bug is usually upstream.</li>
+    </ol>
+
+    <div class="callout callout-blue">
+        <p><strong>Connection to Chapter 7:</strong> The <a href="../pipelines.html">Multi-Model Pipelines</a> chapter covers how to build pipelines with error handling. This method is the testing companion — how to find where your pipeline is fragile so you can add validation between steps.</p>
+    </div>
+
+    <h2>See It on SpaceCraft</h2>
+    <p>
+        <a href="https://huggingface.co/spaces/fffiloni/CLIP-Interrogator-2" class="space-link" target="_blank">CLIP Interrogator</a>
+    </p>
+    <p><strong>What to try:</strong> CLIP Interrogator chains image embedding extraction with text generation to describe an image. Upload a clear, well-lit photo — then upload something ambiguous: a blurry image, an abstract painting, a photo with misleading context. How does the quality of the generated description change? When the image embedding step struggles, the text generation step inherits that confusion.</p>
+    <p>
+        <a href="https://huggingface.co/spaces/kiyer/pathfinder" class="space-link" target="_blank">Pathfinder</a>
+    </p>
+    <p><strong>What to try:</strong> Pathfinder retrieves scientific papers by converting your query into an embedding, then finding similar embeddings in its database. Try a clear, specific query ("transformer attention mechanisms") and then a vague or misleading one ("things that are kind of related to that one paper"). When the query embedding is poor, the retrieval results degrade — but they still look like confident results. The pipeline doesn't tell you it's uncertain.</p>
+
+    <h2>What You'll Discover</h2>
+    <p>The key insight is that <strong>a pipeline is only as reliable as its weakest link, and the weakest link is usually the connection between steps, not the steps themselves</strong>. Each model in a chain may work perfectly on clean input. The failure happens at the handoff — where one model's output becomes the next model's input without any validation. The fix isn't better models. The fix is <strong>checking the intermediate results</strong> and building in validation between steps, as covered in <a href="../pipelines.html">Chapter 7</a>.</p>
+
+    <div class="callout">
+        <p><strong>Try it yourself:</strong> Think of any two Spaces on the <a href="../index.html">leaderboard</a> whose outputs and inputs could connect — for example, an OCR Space that produces text, followed by a sentiment analysis Space that reads text. Mentally chain them: what would happen if the OCR output was garbled? Would the sentiment classifier know? Write down where you'd add a validation check between the two steps.</p>
+    </div>
+</div>
+
+<div class="chapter-nav">
+    <a href="fairness-audit.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">6. Fairness Audit</div></a>
+    <a href="user-centered-design.html" class="next"><div class="nav-dir">Next method</div><div class="nav-title">8. User-Centered Design</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

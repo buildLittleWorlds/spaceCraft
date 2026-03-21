@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classification vs Generation — SpaceCraft Methods</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .method-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-craft); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.1rem; font-weight: 600; margin-top: 36px; margin-bottom: 12px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 8px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .space-link { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; font-size: 0.82rem; color: var(--text); text-decoration: none; transition: all 0.2s; margin: 2px; }
+        .space-link:hover { border-color: var(--border-hover); text-decoration: none; }
+        .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+        .comparison-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; }
+        .comparison-box h4 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; color: var(--accent-craft); }
+        .comparison-box p { font-size: 0.85rem; }
+        @media (max-width: 600px) { .comparison { grid-template-columns: 1fr; } }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; }
+        .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="../index.html" class="nav-brand">SpaceCraft</a>
+    <a href="../index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="../why-cpu.html">1</a><a href="../anatomy.html">2</a><a href="../gpu-vs-cpu.html">3</a><a href="../free-apis.html">4</a><a href="../build.html">5</a><a href="../finding-spaces.html">6</a><a href="../pipelines.html">7</a><a href="../design.html">8</a>
+    <span class="nav-sep">|</span>
+    <a href="../methods.html" class="active">Methods</a>
+</nav>
+
+<div class="article">
+    <div class="method-label">Method 3 &middot; Session 4</div>
+    <h1>Classification vs Generation</h1>
+    <p class="subtitle">AI systems either sort inputs into categories or create new content. Knowing which is which changes everything.</p>
+
+    <h2>What It Is</h2>
+    <p>This isn't a testing method like the others — it's a <strong>fundamental distinction</strong> you need to understand before you can evaluate any AI system. Every model you encounter on Hugging Face does one of two things: it <em>classifies</em> (sorts input into predefined categories) or it <em>generates</em> (creates new content from a prompt). They learn differently, fail differently, and require different training data.</p>
+    <p>Understanding this fork is what separates someone who uses AI tools from someone who understands them.</p>
+
+    <h2>When You Use It</h2>
+    <p>Use this framework whenever you're evaluating a new Space or model. Before you test anything else, ask: <strong>is this a classifier or a generator?</strong> The answer changes what kinds of failures to expect, what training data it needed, and how to evaluate its output.</p>
+
+    <div class="comparison">
+        <div class="comparison-box">
+            <h4>Classification</h4>
+            <p><strong>Input:</strong> Text, image, audio</p>
+            <p><strong>Output:</strong> A label from a fixed set</p>
+            <p><strong>Training:</strong> Needs labeled examples</p>
+            <p><strong>Fails by:</strong> Picking the wrong label</p>
+            <p><strong>Example:</strong> "This review is POSITIVE (94%)"</p>
+        </div>
+        <div class="comparison-box">
+            <h4>Generation</h4>
+            <p><strong>Input:</strong> A prompt or starting text</p>
+            <p><strong>Output:</strong> New content (text, audio, images)</p>
+            <p><strong>Training:</strong> Needs lots of raw data (no labels)</p>
+            <p><strong>Fails by:</strong> Writing something wrong or nonsensical</p>
+            <p><strong>Example:</strong> "Once upon a time, a robot learned to paint..."</p>
+        </div>
+    </div>
+
+    <h2>The Steps</h2>
+    <ol>
+        <li><strong>Identify which type each Space is.</strong> Look at the output. Does it give you a label/score (classifier) or new content (generator)?</li>
+        <li><strong>Test a classifier and a generator on the same input.</strong> Give them identical text. The classifier gives you a label. The generator writes something new. Notice what each one tells you that the other can't.</li>
+        <li><strong>Try an adversarial input on both.</strong> How does each type fail? The classifier picks a wrong label. The generator writes something that sounds plausible but is wrong in a different way.</li>
+        <li><strong>Read the model cards.</strong> Compare training data. Classifiers need expensive labeled datasets. Generators need massive amounts of raw text. This difference in requirements is why generation scaled first — the whole internet is raw text, but labeled data is scarce.</li>
+        <li><strong>Ask the big question:</strong> Which type is more useful for your project? Sometimes you need a definitive answer (classification). Sometimes you need creative output (generation). Sometimes you need both in a <a href="../pipelines.html">pipeline</a>.</li>
+    </ol>
+
+    <h2>See It on SpaceCraft</h2>
+    <p><strong>Classifiers on the leaderboard:</strong></p>
+    <p>
+        <a href="https://huggingface.co/spaces/knowledgator/GLiNER_HandyLab" class="space-link" target="_blank">GLiNER HandyLab</a>
+        <a href="https://huggingface.co/spaces/PirateXX/AI-Content-Detector" class="space-link" target="_blank">AI Content Detector</a>
+    </p>
+    <p>These take text in and output labels (entity types, AI/human classification). The output is always from a fixed menu.</p>
+
+    <p><strong>Generators on the leaderboard:</strong></p>
+    <p>
+        <a href="https://huggingface.co/spaces/hexgrad/Kokoro-TTS" class="space-link" target="_blank">Kokoro TTS</a>
+        <a href="https://huggingface.co/spaces/innoai/Edge-TTS-Text-to-Speech" class="space-link" target="_blank">Edge TTS</a>
+    </p>
+    <p>These take text in and generate new audio. The output is created, not selected from a menu. Every run can produce slightly different results.</p>
+
+    <p><strong>What to try:</strong> Give the same sentence to GLiNER (classifier) and Kokoro TTS (generator). One sorts it into categories. The other turns it into speech. Same input, fundamentally different operations. Which one tells you more about what the sentence <em>means</em>? Which one is more useful for sharing the sentence with someone else?</p>
+
+    <h2>What You'll Discover</h2>
+    <p>The key insight is that <strong>classification and generation need different training data</strong>, and that difference explains the entire history of modern AI. Classifiers need humans to label thousands of examples ("this email is spam," "this review is positive"). That's expensive and slow. Generators need raw text — and the internet has essentially unlimited raw text. That's why generation scaled to ChatGPT and Claude while classification stayed focused on narrow tasks. The training data bottleneck was the fork in the road.</p>
+
+    <div class="callout">
+        <p><strong>Try it yourself:</strong> Browse the <a href="../index.html">SpaceCraft leaderboard</a> and sort each Space into "classifier" or "generator." Some won't fit neatly — data visualization Spaces are neither, and pipeline Spaces may chain both. That ambiguity is itself a useful observation.</p>
+    </div>
+</div>
+
+<div class="chapter-nav">
+    <a href="adversarial-testing.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">2. Adversarial Testing</div></a>
+    <a href="parameter-sweep.html" class="next"><div class="nav-dir">Next method</div><div class="nav-title">4. Parameter Sweep</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

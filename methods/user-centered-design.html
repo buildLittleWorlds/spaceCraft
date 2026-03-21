@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User-Centered Design — SpaceCraft Methods</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-craft: #d4894a; --accent-useful: #7bb87a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .method-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-craft); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.1rem; font-weight: 600; margin-top: 36px; margin-bottom: 12px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 8px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout-green { border-left: 3px solid var(--accent-useful); }
+        .space-link { display: inline-flex; padding: 4px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; font-size: 0.82rem; color: var(--text); text-decoration: none; transition: all 0.2s; margin: 2px; }
+        .space-link:hover { border-color: var(--border-hover); text-decoration: none; }
+        .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+        .comparison-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; }
+        .comparison-box h4 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+        .comparison-box.bad h4 { color: var(--accent-craft); }
+        .comparison-box.good h4 { color: var(--accent-useful); }
+        .comparison-box p { font-size: 0.85rem; }
+        @media (max-width: 600px) { .comparison { grid-template-columns: 1fr; } }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; } .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="../index.html" class="nav-brand">SpaceCraft</a>
+    <a href="../index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="../why-cpu.html">1</a><a href="../anatomy.html">2</a><a href="../gpu-vs-cpu.html">3</a><a href="../free-apis.html">4</a><a href="../build.html">5</a><a href="../finding-spaces.html">6</a><a href="../pipelines.html">7</a><a href="../design.html">8</a>
+    <span class="nav-sep">|</span>
+    <a href="../methods.html" class="active">Methods</a>
+</nav>
+
+<div class="article">
+    <div class="method-label">Method 8 &middot; Session 9</div>
+    <h1>User-Centered Design</h1>
+    <p class="subtitle">The same model can be a confusing demo or a tool someone loves. The difference is whether you designed it for a specific person.</p>
+
+    <h2>What It Is</h2>
+    <p>User-centered design means shifting your focus from "does the model work?" to "can a real person use this to accomplish something they care about?" A model with 95% accuracy is useless if the output says <code>POSITIVE 0.9534</code> and the user has no idea what that means. A model with 80% accuracy in a well-designed interface that says "This review is positive — the customer seems happy with the service" is genuinely useful.</p>
+    <p>Product designers, UX researchers, and software engineers do usability testing constantly. They put their product in front of someone who didn't build it and watch what happens. The confusion points become the redesign checklist.</p>
+
+    <h2>When You Use It</h2>
+    <p>Use this method whenever you've built something and want to know if it <strong>actually works for someone who isn't you</strong>. This is especially important for your final project — the difference between a demo and a tool is whether a non-builder can use it successfully without explanation.</p>
+
+    <h2>The Steps</h2>
+    <ol>
+        <li><strong>Name your user.</strong> Not "anyone" — one specific type of person. A restaurant owner reading reviews. A student checking whether their essay sounds AI-generated. A journalist scanning headlines. The more specific, the better your design decisions will be.</li>
+        <li><strong>Redesign the interface for that person.</strong> Same model, completely different framing:
+
+            <div class="comparison">
+                <div class="comparison-box bad">
+                    <h4>For nobody</h4>
+                    <p><strong>Title:</strong> "Sentiment Analysis"</p>
+                    <p><strong>Output:</strong> POSITIVE 0.97</p>
+                </div>
+                <div class="comparison-box good">
+                    <h4>For a restaurant owner</h4>
+                    <p><strong>Title:</strong> "Review Checker"</p>
+                    <p><strong>Output:</strong> Happy customer — consider thanking them for the feedback</p>
+                </div>
+            </div>
+        </li>
+        <li><strong>Test with someone who didn't build it.</strong> Share the URL. Give zero explanation. Watch what they do:
+            <ul>
+                <li>Where do they hesitate?</li>
+                <li>What do they misunderstand?</li>
+                <li>What do they wish the output told them?</li>
+            </ul>
+        </li>
+        <li><strong>Write three things you'd change</strong> based on what you observed. Every point of confusion is a design opportunity.</li>
+        <li><strong>Ask the harder question:</strong> Should this tool exist for this person? Is it helpful, or is it invasive? Would you want an AI doing this to your own work?</li>
+    </ol>
+
+    <div class="callout callout-green">
+        <p><strong>The test that matters:</strong> Can someone who doesn't know what "sentiment analysis" means use your Space successfully in under 30 seconds? If not, the problem isn't the model — it's the design. <a href="../design.html">Chapter 8</a> covers the specific techniques: titles, examples, output formatting, error states.</p>
+    </div>
+
+    <h2>See It on SpaceCraft</h2>
+    <p>
+        <a href="https://huggingface.co/spaces/hf-audio/open_asr_leaderboard" class="space-link" target="_blank">Open ASR Leaderboard</a>
+    </p>
+    <p><strong>What to notice:</strong> This Space runs no ML inference at all — it's pure data visualization. But it has 1,200+ likes because the <em>design</em> is excellent. Clear filters, sortable columns, responsive layout. The "user" here is an ML researcher comparing speech recognition models, and every design choice serves that person. Ask yourself: what would you change if the user were a podcast producer instead?</p>
+    <p>
+        <a href="https://huggingface.co/spaces/pragnakalp/OCR-image-to-text" class="space-link" target="_blank">OCR Image To Text</a>
+    </p>
+    <p><strong>What to notice:</strong> This Space does one thing — extract text from images. It has 181 likes because it's focused and clear. Upload an image, get text. No options to configure, no confusing parameters. Now compare it to a more complex OCR Space that offers multiple models and settings. Which one would a non-technical user prefer? The simpler one, almost always. Simplicity is a design choice.</p>
+    <p><strong>Compare any two Spaces with different Craft scores</strong> on the <a href="../index.html">leaderboard</a> (sort by Craft). What makes the high-scoring one more usable? It's rarely the model — it's the title, the examples, the output formatting, the error handling.</p>
+
+    <h2>What You'll Discover</h2>
+    <p>The key insight is that <strong>output framing matters more than model accuracy for real-world use</strong>. A 95%-accurate model with a raw JSON output is less useful than an 80%-accurate model that formats its output as a clear, actionable sentence. The model is the engine, but the interface is the steering wheel. Nobody cares how good the engine is if they can't drive the car.</p>
+    <p>This is also the method where you confront an uncomfortable question: <strong>should every tool exist?</strong> An AI that analyzes someone's writing style could be a helpful editor or a surveillance tool. The same sentiment model that helps a restaurant owner can be used to monitor employees. Designing for a specific user forces you to think about who benefits and who might be harmed.</p>
+
+    <div class="callout">
+        <p><strong>Try it yourself:</strong> Pick any Space on the <a href="../index.html">leaderboard</a>. Without reading the description, try to use it. Time yourself: how long until you understand what it does and get a useful result? Now do the same with a second Space. Compare the two experiences. Write down what the faster one did right that the slower one didn't. Those observations are your UX design principles.</p>
+    </div>
+</div>
+
+<div class="chapter-nav">
+    <a href="error-propagation.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">7. Error Propagation</div></a>
+    <a href="../methods.html" class="next"><div class="nav-dir">Back to</div><div class="nav-title">All Methods</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

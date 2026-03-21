@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parameter Sweep — SpaceCraft Methods</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .method-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-craft); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.1rem; font-weight: 600; margin-top: 36px; margin-bottom: 12px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 8px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .space-link { display: inline-flex; padding: 4px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; font-size: 0.82rem; color: var(--text); text-decoration: none; transition: all 0.2s; margin: 2px; }
+        .space-link:hover { border-color: var(--border-hover); text-decoration: none; }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; } .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="../index.html" class="nav-brand">SpaceCraft</a>
+    <a href="../index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="../why-cpu.html">1</a><a href="../anatomy.html">2</a><a href="../gpu-vs-cpu.html">3</a><a href="../free-apis.html">4</a><a href="../build.html">5</a><a href="../finding-spaces.html">6</a><a href="../pipelines.html">7</a><a href="../design.html">8</a>
+    <span class="nav-sep">|</span>
+    <a href="../methods.html" class="active">Methods</a>
+</nav>
+
+<div class="article">
+    <div class="method-label">Method 4 &middot; Session 5</div>
+    <h1>Parameter Sweep</h1>
+    <p class="subtitle">Change one setting at a time. Hold everything else constant. That's experimental design.</p>
+
+    <h2>What It Is</h2>
+    <p>A parameter sweep means systematically changing one variable while keeping everything else the same, then observing how the output changes. This is the foundation of experimental design — isolating variables so you know what actually caused a difference. If you change two things at once, you don't know which one mattered.</p>
+    <p>Every time a developer tunes a model's temperature setting, they're doing a parameter sweep. Every time a team A/B tests a product feature, they're isolating a variable. This method is everywhere.</p>
+
+    <h2>When You Use It</h2>
+    <p>Use a parameter sweep when a Space or model has <strong>adjustable settings</strong> and you want to understand what each one does. Voice selection, speed, temperature, top-p, max length, number of results — any slider, dropdown, or number field is a variable you can sweep.</p>
+
+    <h2>The Steps</h2>
+    <ol>
+        <li><strong>Pick one variable.</strong> Temperature, voice, language, max results — whatever the Space lets you control.</li>
+        <li><strong>Lock everything else.</strong> Same model, same input text, same values for all other settings. Write down your locked values.</li>
+        <li><strong>Sweep the variable.</strong> Go from the lowest setting to the highest in regular steps. If it's temperature: try 0.1, 0.3, 0.5, 0.7, 0.9, 1.2, 1.5.</li>
+        <li><strong>Record the output at each step.</strong> Does it change gradually or suddenly? Is there a sweet spot? What happens at the extremes?</li>
+        <li><strong>Write a "settings recipe."</strong> Document which combinations work best for which tasks. "For formal business writing: temperature 0.3, top-p 0.9. For creative brainstorming: temperature 0.9, top-p 0.95."</li>
+    </ol>
+
+    <h2>See It on SpaceCraft</h2>
+    <p>
+        <a href="https://huggingface.co/spaces/hexgrad/Kokoro-TTS" class="space-link" target="_blank">Kokoro TTS</a>
+        <a href="https://huggingface.co/spaces/NihalGazi/Text-To-Speech-Unlimited" class="space-link" target="_blank">Text-To-Speech Unlimited</a>
+    </p>
+    <p><strong>What to try:</strong> Type the same sentence into a TTS Space. Keep the text identical. Change only the voice. Listen to each version. Which voices sound more natural for this particular sentence? Now lock the voice and change the speed (if available). Does faster speech change the perceived emotion? You're doing a parameter sweep — isolating one variable at a time and observing the effect.</p>
+
+    <h2>What You'll Discover</h2>
+    <p>The key insight is that <strong>the same model can produce dramatically different output depending on settings</strong> — and those settings are the same controls that developers tune on ChatGPT, Claude, and every production AI system. The only difference is scale. When you adjust temperature on a small text generator, you're turning the same knob that OpenAI turns on GPT-4. Understanding what that knob does at small scale means you'll understand it at any scale.</p>
+
+    <div class="callout">
+        <p><strong>Try it yourself:</strong> Open any TTS Space from the <a href="../index.html">leaderboard</a>. Type a single sentence. Try every available voice with the same sentence. Rank them from "most natural" to "least natural" for that sentence. Then try a completely different sentence — does your ranking change? If so, the "best" voice depends on the content, not just the voice itself. That's a finding worth documenting.</p>
+    </div>
+</div>
+
+<div class="chapter-nav">
+    <a href="classification-vs-generation.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">3. Classification vs Generation</div></a>
+    <a href="external-validity.html" class="next"><div class="nav-dir">Next method</div><div class="nav-title">5. External Validity</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adversarial Testing — SpaceCraft Methods</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .method-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-craft); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.1rem; font-weight: 600; margin-top: 36px; margin-bottom: 12px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 8px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .space-link { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; font-size: 0.82rem; color: var(--text); text-decoration: none; transition: all 0.2s; margin: 2px; }
+        .space-link:hover { border-color: var(--border-hover); text-decoration: none; }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; }
+        .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="../index.html" class="nav-brand">SpaceCraft</a>
+    <a href="../index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="../why-cpu.html">1</a><a href="../anatomy.html">2</a><a href="../gpu-vs-cpu.html">3</a><a href="../free-apis.html">4</a><a href="../build.html">5</a><a href="../finding-spaces.html">6</a><a href="../pipelines.html">7</a><a href="../design.html">8</a>
+    <span class="nav-sep">|</span>
+    <a href="../methods.html" class="active">Methods</a>
+</nav>
+
+<div class="article">
+    <div class="method-label">Method 2 &middot; Session 3</div>
+    <h1>Adversarial Testing</h1>
+    <p class="subtitle">Try to break a system on purpose. The failures tell you more than the successes.</p>
+
+    <h2>What It Is</h2>
+    <p>Adversarial testing means deliberately crafting inputs designed to make a system fail. Instead of asking "does this work?" you ask "how can I make this produce a wrong or surprising result?" The goal isn't destruction — it's understanding. Every failure reveals a boundary of what the system actually learned.</p>
+    <p>Security researchers do this with software (penetration testing). Scientists do it with hypotheses (trying to disprove their own theories). Product teams do it before launch (stress testing). You're doing it with AI models.</p>
+
+    <h2>When You Use It</h2>
+    <p>Use adversarial testing when you want to find a system's <strong>real limits</strong>, not just its best-case performance. A model's accuracy on its test set tells you how it performs on data that looks like its training data. Adversarial testing tells you what happens when the real world shows up.</p>
+
+    <h2>The Steps</h2>
+    <ol>
+        <li><strong>Start with something that works.</strong> Find an input the model handles correctly. This is your baseline.</li>
+        <li><strong>Change one thing at a time.</strong> Modify the input in ways that shouldn't change the meaning but might confuse the model:
+            <ul>
+                <li><strong>Noise attacks:</strong> ALL CAPS, extra punctuation, emoji, misspellings, weird formatting</li>
+                <li><strong>Meaning attacks:</strong> Sarcasm, irony, implied context, mixed emotions, professional tone about emotional events</li>
+            </ul>
+        </li>
+        <li><strong>Classify the failure.</strong> When the model gets it wrong, ask: is this a <em>noise problem</em> (fixable with better preprocessing) or a <em>meaning problem</em> (a fundamental limit of the approach)?</li>
+        <li><strong>Document patterns.</strong> After testing many inputs, you'll see categories of failure. These categories are your findings.</li>
+    </ol>
+
+    <h2>See It on SpaceCraft</h2>
+    <p>
+        <a href="https://huggingface.co/spaces/PirateXX/AI-Content-Detector" class="space-link" target="_blank">AI Content Detector</a>
+    </p>
+    <p><strong>What to try:</strong> This Space classifies text as AI-written or human-written. Feed it text you know is human-written but that sounds formal or mechanical. Feed it AI-generated text that's been edited to sound casual. Where does the boundary between "AI" and "human" actually fall? Can you write something that fools it?</p>
+    <p>
+        <a href="https://huggingface.co/spaces/knowledgator/GLiNER_HandyLab" class="space-link" target="_blank">GLiNER HandyLab</a>
+    </p>
+    <p><strong>What to try:</strong> GLiNER extracts named entities from text. Try feeding it text where entity boundaries are ambiguous: "New York Times" (is it a place or an organization?), or sentences where names could be common words ("Joy was reading about Paris"). What confuses the model?</p>
+
+    <h2>What You'll Discover</h2>
+    <p>The key insight from adversarial testing is the <strong>difference between noise and meaning</strong>. Some failures are surface-level: the model stumbles on ALL CAPS or extra spaces, but the underlying text is clear. These are noise problems — fixable with better data cleaning. Other failures are fundamental: the model can't detect sarcasm, or it treats calm language about a disaster as "positive." These are meaning problems — limits of what pattern-matching on words can do. Knowing which is which changes how you build and trust AI systems.</p>
+
+    <div class="callout">
+        <p><strong>Try it yourself:</strong> Pick any Space on the <a href="../index.html">leaderboard</a> that takes text input. Write three adversarial inputs: one that uses weird formatting (noise), one that uses sarcasm or irony (meaning), and one that mixes languages. Run all three. Classify each failure as noise or meaning. Which type does the Space handle better?</p>
+    </div>
+</div>
+
+<div class="chapter-nav">
+    <a href="comparative-analysis.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">1. Comparative Analysis</div></a>
+    <a href="classification-vs-generation.html" class="next"><div class="nav-dir">Next method</div><div class="nav-title">3. Classification vs Generation</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

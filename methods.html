@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Methods Gallery — SpaceCraft</title>
+    <meta name="description" content="Eight research methods for investigating AI systems, each mapped to real Hugging Face Spaces you can test right now.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-resource: #6ba3d6; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+
+        .article { max-width: 760px; margin: 0 auto; padding: 48px 24px 48px; }
+        .article h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+
+        .method-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 32px; }
+        .method-card { display: grid; grid-template-columns: 56px 1fr; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; text-decoration: none; transition: all 0.2s; }
+        .method-card:hover { border-color: var(--border-hover); box-shadow: 0 2px 12px rgba(0,0,0,0.04); text-decoration: none; }
+        .method-num { font-family: 'DM Mono', monospace; font-size: 1.4rem; font-weight: 500; color: var(--text-dim); display: flex; align-items: center; justify-content: center; }
+        .method-info h3 { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+        .method-info .method-session { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-craft); margin-bottom: 6px; }
+        .method-info p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
+        .method-spaces { display: flex; gap: 6px; flex-wrap: wrap; }
+        .method-spaces span { font-size: 0.68rem; padding: 2px 8px; border-radius: 100px; background: var(--surface-2); color: var(--text-dim); }
+
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+        footer a:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="index.html" class="nav-brand">SpaceCraft</a>
+    <a href="index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="why-cpu.html">1. Why CPU-Only</a>
+    <a href="anatomy.html">2. Anatomy</a>
+    <a href="gpu-vs-cpu.html">3. GPU vs CPU</a>
+    <a href="free-apis.html">4. Free APIs</a>
+    <a href="build.html">5. Build</a>
+    <a href="finding-spaces.html">6. Finding Spaces</a>
+    <a href="pipelines.html">7. Pipelines</a>
+    <a href="design.html">8. Design</a>
+    <span class="nav-sep">|</span>
+    <a href="methods.html" class="active">Methods</a>
+</nav>
+
+<div class="article">
+    <h1>Research Methods Gallery</h1>
+    <p class="subtitle">Eight ways to investigate AI systems. Each method is a tool you can use on any model or Space — not just the ones in this course.</p>
+
+    <p>These methods come from real research practice. Scientists, engineers, and product designers use versions of these every day. The difference is that you're applying them to Hugging Face Spaces you can test right now, for free.</p>
+    <p>Each method page shows you the steps, maps them to Spaces on the <a href="index.html">leaderboard</a>, and gives you an exercise to try. Read them in order or jump to whichever one your current project needs.</p>
+
+    <div class="method-grid">
+        <a href="methods/comparative-analysis.html" class="method-card">
+            <div class="method-num">01</div>
+            <div class="method-info">
+                <h3>Comparative Analysis</h3>
+                <div class="method-session">Session 2</div>
+                <p>Test the same question with different tools. The disagreements reveal what each tool learned — and what it can't see.</p>
+                <div class="method-spaces"><span>core OCR</span><span>Kokoro TTS</span><span>Edge TTS</span></div>
+            </div>
+        </a>
+        <a href="methods/adversarial-testing.html" class="method-card">
+            <div class="method-num">02</div>
+            <div class="method-info">
+                <h3>Adversarial Testing</h3>
+                <div class="method-session">Session 3</div>
+                <p>Try to break a system on purpose. Instead of asking "does this work?" you ask "how can I make this fail?"</p>
+                <div class="method-spaces"><span>AI Content Detector</span><span>GLiNER HandyLab</span></div>
+            </div>
+        </a>
+        <a href="methods/classification-vs-generation.html" class="method-card">
+            <div class="method-num">03</div>
+            <div class="method-info">
+                <h3>Classification vs Generation</h3>
+                <div class="method-session">Session 4</div>
+                <p>AI systems either sort inputs into categories or create new content. They learn differently, fail differently, and need different data.</p>
+                <div class="method-spaces"><span>GLiNER</span><span>Kokoro TTS</span><span>infini-gram</span></div>
+            </div>
+        </a>
+        <a href="methods/parameter-sweep.html" class="method-card">
+            <div class="method-num">04</div>
+            <div class="method-info">
+                <h3>Parameter Sweep</h3>
+                <div class="method-session">Session 5</div>
+                <p>Change one setting at a time. Hold everything else constant. Observe how the output changes. That's experimental design.</p>
+                <div class="method-spaces"><span>Kokoro TTS</span><span>Text-To-Speech Unlimited</span></div>
+            </div>
+        </a>
+        <a href="methods/external-validity.html" class="method-card">
+            <div class="method-num">05</div>
+            <div class="method-info">
+                <h3>External Validity</h3>
+                <div class="method-session">Session 6</div>
+                <p>Test whether results hold up outside the original conditions. A model that aces its home domain may fail completely on a new one.</p>
+                <div class="method-spaces"><span>OPUS Translate</span><span>LightOnOCR</span><span>core OCR</span></div>
+            </div>
+        </a>
+        <a href="methods/fairness-audit.html" class="method-card">
+            <div class="method-num">06</div>
+            <div class="method-info">
+                <h3>Fairness Audit</h3>
+                <div class="method-session">Session 7</div>
+                <p>Design paired inputs that differ only in one demographic variable. If the output changes, the model is responding to something it shouldn't.</p>
+                <div class="method-spaces"><span>AI Content Detector</span><span>GLiNER HandyLab</span></div>
+            </div>
+        </a>
+        <a href="methods/error-propagation.html" class="method-card">
+            <div class="method-num">07</div>
+            <div class="method-info">
+                <h3>Error Propagation</h3>
+                <div class="method-session">Session 8</div>
+                <p>In a pipeline, one model's output becomes the next model's input. Break step 1 and trace the damage through every step after it.</p>
+                <div class="method-spaces"><span>Pathfinder</span><span>CLIP Interrogator</span></div>
+            </div>
+        </a>
+        <a href="methods/user-centered-design.html" class="method-card">
+            <div class="method-num">08</div>
+            <div class="method-info">
+                <h3>User-Centered Design</h3>
+                <div class="method-session">Session 9</div>
+                <p>Shift from "does the model work?" to "can a real person use this?" Put your tool in front of someone who didn't build it.</p>
+                <div class="method-spaces"><span>Open ASR Leaderboard</span><span>OCR Image To Text</span></div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>
