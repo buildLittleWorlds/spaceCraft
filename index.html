@@ -148,10 +148,9 @@
     <input type="text" class="search-box" id="searchBox" placeholder="Search spaces...">
     <button class="filter-btn active" data-category="all">All</button>
     <button class="filter-btn" data-category="NLP & Text">NLP & Text</button>
-    <button class="filter-btn" data-category="OCR & Documents">OCR & Docs</button>
+    <button class="filter-btn" data-category="Image">Image</button>
     <button class="filter-btn" data-category="Audio & Speech">Audio</button>
-    <button class="filter-btn" data-category="Data & Visualization">Data & Viz</button>
-    <button class="filter-btn" data-category="Search & Retrieval">Search</button>
+    <button class="filter-btn" data-category="OCR & Documents">OCR & Docs</button>
     <button class="filter-btn" data-category="Tools & Utilities">Tools</button>
     <select class="sort-select" id="sortSelect">
         <option value="total">Sort: Total Score</option>
@@ -188,19 +187,6 @@
 <script>
 const spaces = [
   {
-    name: "Kokoro TTS",
-    author: "hexgrad",
-    url: "https://huggingface.co/spaces/hexgrad/Kokoro-TTS",
-    desc: "High-quality text-to-speech with multiple voices, optimized to run entirely on CPU.",
-    category: "Audio & Speech",
-    resourcefulness: 9, usefulness: 9, craft: 8,
-    cpuTrick: "Small optimized TTS model",
-    learnLink: "gpu-vs-cpu.html#specialized-models",
-    learnLabel: "Ch 3: Specialized models",
-    sessions: "S2 S5 S7",
-    note: "3,200+ likes. Proof that high-quality audio synthesis doesn't need a GPU."
-  },
-  {
     name: "Edge TTS",
     author: "innoai",
     url: "https://huggingface.co/spaces/innoai/Edge-TTS-Text-to-Speech",
@@ -212,58 +198,6 @@ const spaces = [
     learnLabel: "Ch 4: Free APIs",
     sessions: "S2 S3 S5",
     note: "1,000+ likes. Zero local model loading. A masterclass in using free external APIs."
-  },
-  {
-    name: "Chatterbox TTS",
-    author: "ResembleAI",
-    url: "https://huggingface.co/spaces/ResembleAI/chatterbox",
-    desc: "Expressive zero-shot text-to-speech with emotion control and voice cloning from a short clip.",
-    category: "Audio & Speech",
-    resourcefulness: 8, usefulness: 8, craft: 8,
-    cpuTrick: "Efficient speech synthesis",
-    learnLink: "gpu-vs-cpu.html#specialized-models",
-    learnLabel: "Ch 3: Specialized models",
-    sessions: "S7",
-    note: "1,700+ likes. Voice cloning from a reference clip on CPU."
-  },
-  {
-    name: "Text-To-Speech Unlimited",
-    author: "NihalGazi",
-    url: "https://huggingface.co/spaces/NihalGazi/Text-To-Speech-Unlimited",
-    desc: "Unlimited text-to-speech with multiple voice options and no character limits.",
-    category: "Audio & Speech",
-    resourcefulness: 9, usefulness: 9, craft: 7,
-    cpuTrick: "API-based TTS",
-    learnLink: "free-apis.html",
-    learnLabel: "Ch 4: Free APIs",
-    sessions: "S3 S5",
-    note: "1,750 likes. Most TTS demos have character limits. This one doesn't."
-  },
-  {
-    name: "Text to Speech (k2-fsa)",
-    author: "k2-fsa",
-    url: "https://huggingface.co/spaces/k2-fsa/text-to-speech",
-    desc: "Next-gen Kaldi text-to-speech system with multiple language and voice options.",
-    category: "Audio & Speech",
-    resourcefulness: 9, usefulness: 8, craft: 7,
-    cpuTrick: "Kaldi framework, CPU-optimized",
-    learnLink: "gpu-vs-cpu.html#specialized-models",
-    learnLabel: "Ch 3: Specialized models",
-    sessions: "S5",
-    note: "468 likes. Built on Kaldi, which has decades of CPU optimization."
-  },
-  {
-    name: "TTS Spaces Arena",
-    author: "Pendrokar",
-    url: "https://huggingface.co/spaces/Pendrokar/TTS-Spaces-Arena",
-    desc: "Blind A/B voting on text-to-speech models. ELO-style ranking built from crowd votes.",
-    category: "Data & Visualization",
-    resourcefulness: 9, usefulness: 8, craft: 9,
-    cpuTrick: "Precomputed audio, no live inference",
-    learnLink: "gpu-vs-cpu.html#no-inference",
-    learnLabel: "Ch 3: No inference pattern",
-    sessions: "S9",
-    note: "471 likes. The arena/voting pattern needs no GPU at all."
   },
   {
     name: "GLiNER HandyLab",
@@ -279,56 +213,56 @@ const spaces = [
     note: "86 likes. One small model doing many tasks well on CPU."
   },
   {
-    name: "GLiNER-medium-v2.1",
-    author: "tomaarsen",
-    url: "https://huggingface.co/spaces/tomaarsen/gliner_medium-v2.1",
-    desc: "Extract custom entities from any text using zero-shot NER. Define your own entity types.",
+    name: "Summarize Long Text",
+    author: "pszemraj",
+    url: "https://huggingface.co/spaces/pszemraj/summarize-long-text",
+    desc: "Paste any long article or essay and get a concise summary. A practical study tool.",
     category: "NLP & Text",
     resourcefulness: 8, usefulness: 9, craft: 7,
-    cpuTrick: "Medium-sized model, inference-only",
-    learnLink: "anatomy.html",
-    learnLabel: "Ch 2: How Spaces work",
-    sessions: "S4 S6",
-    note: "176 likes. Zero-shot NER: define custom entities for any domain."
-  },
-  {
-    name: "OPUS Translate",
-    author: "Helsinki-NLP",
-    url: "https://huggingface.co/spaces/Helsinki-NLP/opus-translate",
-    desc: "Lightweight translation between hundreds of language pairs using efficient specialized models.",
-    category: "NLP & Text",
-    resourcefulness: 9, usefulness: 8, craft: 6,
-    cpuTrick: "Small per-language-pair models",
-    learnLink: "gpu-vs-cpu.html#specialized-models",
-    learnLabel: "Ch 3: Specialized models",
-    sessions: "S6 S8",
-    note: "32 likes. Each model handles one language pair, so each is tiny."
-  },
-  {
-    name: "core OCR",
-    author: "prithivMLmods",
-    url: "https://huggingface.co/spaces/prithivMLmods/CORE-OCR",
-    desc: "Compare multiple lightweight OCR models side by side on your documents and images.",
-    category: "OCR & Documents",
-    resourcefulness: 8, usefulness: 9, craft: 8,
-    cpuTrick: "Curated small OCR models",
-    learnLink: "finding-spaces.html",
-    learnLabel: "Ch 6: Studying Spaces",
-    sessions: "S2 S6",
-    note: "221 likes. Multi-model comparison in one Space."
-  },
-  {
-    name: "LightOnOCR 2 1B",
-    author: "lightonai",
-    url: "https://huggingface.co/spaces/lightonai/LightOnOCR-2-1B-Demo",
-    desc: "Extract text from images and PDFs using a 1B-parameter model designed for CPU inference.",
-    category: "OCR & Documents",
-    resourcefulness: 9, usefulness: 8, craft: 7,
-    cpuTrick: "1B model optimized for CPU",
+    cpuTrick: "CPU-optimized summarization model",
     learnLink: "gpu-vs-cpu.html#model-sizes",
     learnLabel: "Ch 3: Model sizes",
-    sessions: "S6",
-    note: "107 likes. Designed from the ground up to be efficient."
+    sessions: "S4 S6",
+    note: "157 likes. Practical study tool that runs entirely on CPU."
+  },
+  {
+    name: "BRIA RMBG 1.4",
+    author: "briaai",
+    url: "https://huggingface.co/spaces/briaai/BRIA-RMBG-1.4",
+    desc: "Upload any image and instantly remove its background. Clean transparent PNG output.",
+    category: "Image",
+    resourcefulness: 8, usefulness: 9, craft: 8,
+    cpuTrick: "Small specialized segmentation model",
+    learnLink: "gpu-vs-cpu.html#specialized-models",
+    learnLabel: "Ch 3: Specialized models",
+    sessions: "S2 S5",
+    note: "869 likes. Proof that image segmentation can run on CPU with the right model."
+  },
+  {
+    name: "Lama Cleaner",
+    author: "Sanster",
+    url: "https://huggingface.co/spaces/Sanster/Lama-Cleaner-lama",
+    desc: "Paint over unwanted objects in photos and watch them disappear. AI inpainting on CPU.",
+    category: "Image",
+    resourcefulness: 8, usefulness: 9, craft: 8,
+    cpuTrick: "LaMa inpainting model on CPU",
+    learnLink: "gpu-vs-cpu.html#specialized-models",
+    learnLabel: "Ch 3: Specialized models",
+    sessions: "S5 S8",
+    note: "974 likes. Magic eraser effect using a model designed to run without GPU."
+  },
+  {
+    name: "Face Swap",
+    author: "felixrosberg",
+    url: "https://huggingface.co/spaces/felixrosberg/face-swap",
+    desc: "Swap faces between two photos using InsightFace. Includes an anonymization mode.",
+    category: "Image",
+    resourcefulness: 8, usefulness: 7, craft: 8,
+    cpuTrick: "InsightFace on CPU",
+    learnLink: "design.html",
+    learnLabel: "Ch 8: Designing for users",
+    sessions: "S5 S8",
+    note: "789 likes. Fun demo that also sparks discussion about AI ethics and deepfakes."
   },
   {
     name: "PP-OCRv5",
@@ -342,84 +276,6 @@ const spaces = [
     learnLabel: "Ch 3: Specialized models",
     sessions: "S6",
     note: "77 likes. Designed for edge devices, perfect for free CPU."
-  },
-  {
-    name: "OCR Image To Text",
-    author: "pragnakalp",
-    url: "https://huggingface.co/spaces/pragnakalp/OCR-image-to-text",
-    desc: "Simple, focused OCR: upload an image, get extracted text. Clean and functional.",
-    category: "OCR & Documents",
-    resourcefulness: 7, usefulness: 8, craft: 7,
-    cpuTrick: "Lightweight OCR pipeline",
-    learnLink: "build.html",
-    learnLabel: "Ch 5: Build your first",
-    sessions: "S9 S10",
-    note: "181 likes. Does one thing well. A great starter project to study."
-  },
-  {
-    name: "Open ASR Leaderboard",
-    author: "hf-audio",
-    url: "https://huggingface.co/spaces/hf-audio/open_asr_leaderboard",
-    desc: "Interactive multi-dataset speech recognition model comparison with rich filtering.",
-    category: "Data & Visualization",
-    resourcefulness: 10, usefulness: 9, craft: 9,
-    cpuTrick: "Pure data visualization, no inference",
-    learnLink: "gpu-vs-cpu.html#no-inference",
-    learnLabel: "Ch 3: No inference pattern",
-    sessions: "S9 S10",
-    note: "1,200+ likes. No ML inference at all. Just data, done beautifully."
-  },
-  {
-    name: "Big Code Models Leaderboard",
-    author: "bigcode",
-    url: "https://huggingface.co/spaces/bigcode/bigcode-models-leaderboard",
-    desc: "Explore and compare code generation model benchmarks with sorting and filtering.",
-    category: "Data & Visualization",
-    resourcefulness: 10, usefulness: 8, craft: 8,
-    cpuTrick: "Static leaderboard, no inference",
-    learnLink: "gpu-vs-cpu.html#no-inference",
-    learnLabel: "Ch 3: No inference pattern",
-    sessions: "S9 S10",
-    note: "1,500+ likes. Hugely popular with zero ML compute."
-  },
-  {
-    name: "Pathfinder",
-    author: "kiyer",
-    url: "https://huggingface.co/spaces/kiyer/pathfinder",
-    desc: "Retrieve and analyze scientific papers based on natural language queries.",
-    category: "Search & Retrieval",
-    resourcefulness: 8, usefulness: 9, craft: 8,
-    cpuTrick: "Vector similarity search on CPU",
-    learnLink: "gpu-vs-cpu.html#specialized-models",
-    learnLabel: "Ch 3: Specialized models",
-    sessions: "S8",
-    note: "35 likes. Semantic search is CPU-friendly because embedding lookup is cheap."
-  },
-  {
-    name: "infini-gram",
-    author: "liujch1998",
-    url: "https://huggingface.co/spaces/liujch1998/infini-gram",
-    desc: "Search and analyze n-gram patterns across massive text datasets.",
-    category: "Search & Retrieval",
-    resourcefulness: 9, usefulness: 7, craft: 8,
-    cpuTrick: "Efficient n-gram indexing",
-    learnLink: "gpu-vs-cpu.html#specialized-models",
-    learnLabel: "Ch 3: Specialized models",
-    sessions: "S4",
-    note: "122 likes. Clever data structures make large-scale text analysis work on CPU."
-  },
-  {
-    name: "CLIP Interrogator",
-    author: "fffiloni",
-    url: "https://huggingface.co/spaces/fffiloni/CLIP-Interrogator-2",
-    desc: "Generate detailed text prompts that describe an uploaded image.",
-    category: "Tools & Utilities",
-    resourcefulness: 8, usefulness: 8, craft: 7,
-    cpuTrick: "CLIP embeddings are lightweight",
-    learnLink: "gpu-vs-cpu.html#model-sizes",
-    learnLabel: "Ch 3: Model sizes",
-    sessions: "S8",
-    note: "1,300+ likes. CLIP is contrastive, not generative, so it runs well on CPU."
   },
   {
     name: "AI Content Detector",
@@ -446,6 +302,19 @@ const spaces = [
     learnLabel: "Ch 4: Free APIs",
     sessions: "S3 S10",
     note: "Built by a Gradio core maintainer. Uses an API to generate Spaces."
+  },
+  {
+    name: "Qwen3 Demo",
+    author: "Qwen",
+    url: "https://huggingface.co/spaces/Qwen/Qwen3-Demo",
+    desc: "Chat with Qwen3 and watch its chain-of-thought reasoning in real time.",
+    category: "Tools & Utilities",
+    resourcefulness: 9, usefulness: 8, craft: 8,
+    cpuTrick: "API-powered chat",
+    learnLink: "free-apis.html",
+    learnLabel: "Ch 4: Free APIs",
+    sessions: "S3 S7",
+    note: "848 likes. See how an LLM thinks step by step. Educational window into AI reasoning."
   }
 ];
 
