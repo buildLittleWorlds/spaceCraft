@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide: BRIA RMBG 1.4 — SpaceCraft</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #faf9f7; --surface: #ffffff; --surface-2: #f5f4f1; --border: #e8e6e1; --border-hover: #d4d1cb; --text: #2c2a25; --text-muted: #6b6860; --text-dim: #a09d96; --accent-resource: #6ba3d6; --accent-useful: #7bb87a; --accent-craft: #d4894a; --link: #5a8fbf; --radius: 10px; --radius-sm: 7px; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .site-nav { max-width: 960px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .site-nav .nav-brand { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--text); text-decoration: none; margin-right: 12px; }
+        .site-nav a { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; padding: 4px 9px; border-radius: 100px; transition: all 0.2s; }
+        .site-nav a:hover { color: var(--text-muted); background: var(--surface-2); }
+        .site-nav a.active { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+        .nav-sep { color: var(--border); font-size: 0.7rem; margin: 0 2px; }
+        .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 48px; }
+        .guide-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--accent-craft); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .article h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px; }
+        .article .subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 40px; }
+        .article h2 { font-size: 1.1rem; font-weight: 600; margin-top: 36px; margin-bottom: 12px; }
+        .article h3 { font-size: 0.95rem; font-weight: 600; margin-top: 24px; margin-bottom: 8px; }
+        .article p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .article a { color: var(--link); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article ul, .article ol { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; padding-left: 24px; }
+        .article li { margin-bottom: 8px; }
+        .article strong { color: var(--text); }
+        .callout { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin: 24px 0; }
+        .callout p { margin-bottom: 8px; }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout-blue { border-left: 3px solid var(--accent-resource); }
+        .callout-green { border-left: 3px solid var(--accent-useful); }
+        code { font-family: 'DM Mono', monospace; font-size: 0.84em; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--text); }
+        .code-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 20px; margin: 16px 0; overflow-x: auto; font-family: 'DM Mono', monospace; font-size: 0.82rem; line-height: 1.6; color: var(--text-muted); white-space: pre; }
+        .annotation { background: var(--surface-2); border-left: 3px solid var(--accent-resource); padding: 12px 16px; margin: -8px 0 16px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 0.85rem; color: var(--text-muted); }
+        .pipeline-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0; text-align: center; font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--text-muted); }
+        .pipeline-diagram .step { display: inline-block; padding: 6px 14px; background: var(--surface-2); border-radius: var(--radius-sm); margin: 4px; }
+        .pipeline-diagram .arrow { display: inline-block; margin: 0 6px; color: var(--text-dim); }
+        .chapter-nav { max-width: 680px; margin: 0 auto; padding: 0 24px 48px; display: flex; justify-content: space-between; gap: 16px; }
+        .chapter-nav a { display: block; padding: 14px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all 0.2s; flex: 1; }
+        .chapter-nav a:hover { border-color: var(--border-hover); box-shadow: 0 1px 6px rgba(0,0,0,0.03); }
+        .chapter-nav .prev { text-align: left; } .chapter-nav .next { text-align: right; }
+        .chapter-nav .nav-dir { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+        .chapter-nav .nav-title { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+        footer { text-align: center; padding: 24px; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+        footer a { color: var(--text-muted); text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a href="../index.html" class="nav-brand">SpaceCraft</a>
+    <a href="../index.html">Leaderboard</a>
+    <span class="nav-sep">|</span>
+    <a href="../why-cpu.html">1</a><a href="../anatomy.html">2</a><a href="../gpu-vs-cpu.html">3</a><a href="../free-apis.html">4</a><a href="../build.html">5</a><a href="../finding-spaces.html">6</a><a href="../pipelines.html">7</a><a href="../design.html">8</a>
+    <span class="nav-sep">|</span>
+    <a href="../methods.html">Methods</a>
+    <a href="../guides.html" class="active">Guides</a>
+    <a href="../showcase.html">Showcase</a>
+</nav>
+
+<div class="article">
+    <div class="guide-label">Build Guide &middot; Specialized Model Pattern</div>
+    <h1>BRIA RMBG 1.4</h1>
+    <p class="subtitle">300+ likes. One small model. Upload a photo, get the background removed in seconds &mdash; all on free CPU.</p>
+
+    <p><a href="https://huggingface.co/spaces/briaai/BRIA-RMBG-1.4">View the Space on Hugging Face</a></p>
+
+    <h2>What This Space Does</h2>
+    <p>You upload an image &mdash; a portrait, a product photo, anything with a clear subject &mdash; and the Space returns the same image with the background removed. The subject is cleanly cut out with a transparent background. It handles hair, edges, and partially transparent objects surprisingly well for a CPU model.</p>
+    <p>This is the kind of tool people actually use in their daily work: e-commerce sellers cleaning up product photos, designers extracting subjects for composites, students making profile pictures.</p>
+
+    <div class="callout callout-blue">
+        <p><strong>Key insight:</strong> BRIA's background removal model was specifically designed to be small and efficient. It's not a general-purpose vision model repurposed for segmentation &mdash; it's a specialized model built for one task. That's why it works on CPU. This is the <strong>specialized model pattern</strong> from <a href="../gpu-vs-cpu.html">Chapter 3</a>: choose a model trained for exactly your task, not the biggest model you can find.</p>
+    </div>
+
+    <h2>The Architecture</h2>
+    <div class="pipeline-diagram">
+        <span class="step">User uploads image</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">Preprocess &amp; resize</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">RMBG model inference</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">Generate alpha mask</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">Apply mask to original</span>
+    </div>
+
+    <p>This is the <strong>specialized model pattern</strong> &mdash; a small, focused model loaded directly in the Space. Unlike the API wrapper pattern (Edge TTS), this Space runs actual ML inference on CPU. The model is small enough that inference takes seconds, not minutes.</p>
+
+    <h2>The Code Pattern</h2>
+    <p>Here's the essential structure. This isn't the exact source &mdash; it's the pattern you'd use to build your own background removal Space:</p>
+
+    <h3>1. Load the model</h3>
+    <div class="code-block">from transformers import pipeline
+from PIL import Image
+
+segmenter = pipeline(
+    "image-segmentation",
+    model="briaai/RMBG-1.4",
+    trust_remote_code=True
+)</div>
+    <div class="annotation">The model loads once at startup. <code>trust_remote_code=True</code> is needed because BRIA uses custom model code. The <code>pipeline()</code> API handles all the complexity of loading weights, setting up the processor, and configuring inference. On CPU, the model loads in a few seconds and uses roughly 1&ndash;2 GB of RAM.</div>
+
+    <h3>2. The processing function</h3>
+    <div class="code-block">def remove_background(input_image):
+    if input_image is None:
+        return None
+
+    # Run the model
+    result = segmenter(input_image)
+
+    # The model returns a mask image
+    mask = result[0]["mask"]
+
+    # Apply mask to original image
+    input_image = input_image.convert("RGBA")
+    mask = mask.resize(input_image.size)
+    input_image.putalpha(mask)
+
+    return input_image</div>
+    <div class="annotation">The model outputs a segmentation mask &mdash; a grayscale image where white = foreground and black = background. We convert the input to RGBA (adding an alpha channel), then use the mask as the alpha channel. White areas stay visible, black areas become transparent. That's the whole algorithm.</div>
+
+    <h3>3. Gradio interface</h3>
+    <div class="code-block">import gradio as gr
+
+demo = gr.Interface(
+    fn=remove_background,
+    inputs=gr.Image(
+        label="Upload an image",
+        type="pil"
+    ),
+    outputs=gr.Image(
+        label="Background removed",
+        type="pil"
+    ),
+    title="Background Remover",
+    description="Upload a photo to remove its background."
+)
+demo.launch()</div>
+    <div class="annotation">A clean <code>gr.Interface</code> &mdash; image in, image out. <code>type="pil"</code> means Gradio handles the conversion between uploaded files and PIL Image objects. The output image has a transparent background, which Gradio renders with a checkerboard pattern so users can see the transparency.</div>
+
+    <h2>Why It Works on CPU</h2>
+    <p>Three factors make this Space CPU-viable:</p>
+    <ul>
+        <li><strong>Small model size.</strong> RMBG-1.4 has far fewer parameters than general-purpose vision models like SAM or Segment Anything. It fits comfortably in the free tier's 16 GB RAM.</li>
+        <li><strong>Single-task focus.</strong> The model only does background removal. It doesn't need the capacity to handle arbitrary segmentation tasks, object detection, or image generation. Less capability = smaller model = faster CPU inference.</li>
+        <li><strong>Efficient architecture.</strong> The model uses an architecture optimized for inference speed, not training flexibility. It processes a typical photo in 2&ndash;5 seconds on CPU &mdash; fast enough that users don't mind waiting.</li>
+    </ul>
+
+    <h2>What You Could Change</h2>
+    <ol>
+        <li><strong>Add batch processing.</strong> Let users upload multiple images at once. Use <code>gr.File</code> with <code>file_count="multiple"</code> and loop through each image. Useful for e-commerce sellers processing a whole catalog.</li>
+        <li><strong>Replace the background.</strong> Instead of making it transparent, let the user choose a new background &mdash; a solid color, a gradient, or another uploaded image. Add a <code>gr.ColorPicker</code> or a second <code>gr.Image</code> input.</li>
+        <li><strong>Chain with another model.</strong> Use background removal as step 1 in a <a href="../pipelines.html">pipeline</a>: remove background &rarr; run the isolated subject through a classification model &rarr; auto-tag the object. Now you have an image-to-label tool.</li>
+    </ol>
+
+    <h2>Connection to the Course</h2>
+    <ul>
+        <li><strong><a href="../gpu-vs-cpu.html">Chapter 3 (GPU vs CPU):</a></strong> BRIA RMBG is the poster child for choosing a small, specialized model. It demonstrates that you don't need a huge vision model to do useful image processing on CPU.</li>
+        <li><strong><a href="../methods/user-centered-design.html">User-Centered Design:</a></strong> Background removal is one of the most common photo editing tasks. This Space succeeds because it does one thing that real people actually need, and it does it with minimal friction &mdash; upload, wait, download.</li>
+        <li><strong><a href="../methods/comparative-analysis.html">Comparative Analysis:</a></strong> Try the same photo in BRIA RMBG and Lama Cleaner (which erases objects rather than removing backgrounds). Same input image, different tools, different results. What does each model "see"?</li>
+    </ul>
+
+    <div class="callout callout-green">
+        <p><strong>The lesson:</strong> This Space works because the model was built for this exact job. When you're choosing a model for your own Space, don't reach for the biggest or most general one. Find a model that was trained specifically for your task. It'll be smaller, faster, and better at that one thing than any general model could be.</p>
+    </div>
+</div>
+
+<div class="chapter-nav">
+    <a href="gliner.html" class="prev"><div class="nav-dir">Previous</div><div class="nav-title">Guide: GLiNER HandyLab</div></a>
+    <a href="../guides.html" class="next"><div class="nav-dir">Back to</div><div class="nav-title">All Guides</div></a>
+</div>
+
+<footer><p>SpaceCraft &middot; <a href="https://github.com/buildLittleWorlds/spaceCraft">GitHub</a></p></footer>
+</body>
+</html>

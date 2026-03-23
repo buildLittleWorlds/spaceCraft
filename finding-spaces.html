@@ -146,26 +146,26 @@
 
     <h3>1. The API Wrapper</h3>
     <p>Build a polished Gradio interface that calls a <a href="free-apis.html">free API</a> for the heavy lifting. Your Space handles UI, input validation, and output formatting. All compute happens elsewhere.</p>
-    <p><strong>Leaderboard examples:</strong> Edge TTS, Text-To-Speech Unlimited, Gradio Playground Bot</p>
+    <p><strong>Leaderboard examples:</strong> Edge TTS, Gradio Playground Bot, Qwen3 Demo</p>
 
     <h3>2. The Specialized Model</h3>
     <p>Use a <a href="gpu-vs-cpu.html#specialized-models">small model</a> trained for one task. It won't win general benchmarks, but it'll be fast and effective in its niche.</p>
-    <p><strong>Leaderboard examples:</strong> GLiNER HandyLab, OPUS Translate, Kokoro TTS</p>
+    <p><strong>Leaderboard examples:</strong> GLiNER HandyLab, BRIA RMBG 1.4, AI Content Detector</p>
 
     <h3>3. The Data Dashboard</h3>
     <p><a href="gpu-vs-cpu.html#no-inference">No ML inference at all.</a> Load pre-computed data and let users explore it with filters, sorts, and visualizations.</p>
-    <p><strong>Leaderboard examples:</strong> Open ASR Leaderboard, Big Code Models Leaderboard</p>
+    <p><strong>Beyond the leaderboard:</strong> Spaces like the <a href="https://huggingface.co/spaces/hf-audio/open_asr_leaderboard">Open ASR Leaderboard</a> (1,200+ likes) show how pure data visualization can be wildly popular with no ML inference at all.</p>
 
     <h3>4. The Crowd Tool</h3>
     <p>Let users contribute data rather than consuming compute. Voting systems, annotation tools, and submission platforms are inherently CPU-friendly because the "work" is done by the users.</p>
-    <p><strong>Leaderboard example:</strong> TTS Spaces Arena</p>
+    <p><strong>Beyond the leaderboard:</strong> The <a href="https://huggingface.co/spaces/TTS-AGI/TTS-Arena">TTS Spaces Arena</a> lets users vote on which voice sounds better &mdash; all the "work" is done by human evaluators, not compute.</p>
 
     <div class="callout">
         <p><strong>Exercise:</strong> Find a CPU-only Space not on the <a href="index.html">SpaceCraft leaderboard</a>. Fork it. Read its code. Write a short analysis: what model or API does it use? How does it handle user input? What makes it work on CPU? What would you change? Then build your own variation. That cycle &mdash; find, study, build, improve &mdash; is how you get good at this.</p>
     </div>
 
     <h2>Test Yourself: Evaluate a Space</h2>
-    <p>Here's a Space description. Rate it on SpaceCraft's three criteria, then reveal the leaderboard's actual scores.</p>
+    <p>Here's a Space that's not on the leaderboard. Try scoring it on SpaceCraft's three criteria, then reveal our analysis.</p>
 
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin:24px 0;">
         <p style="font-size:0.88rem;color:var(--text);margin-bottom:6px;"><strong>OCR Image To Text</strong> by pragnakalp</p>
@@ -192,14 +192,14 @@
         <button onclick="document.getElementById('scorecard-reveal').style.display='block'" style="padding:6px 16px;border:1px solid var(--border);border-radius:100px;background:transparent;font-family:inherit;font-size:0.78rem;cursor:pointer;color:var(--text-muted);">Reveal actual scores</button>
 
         <div id="scorecard-reveal" style="display:none;margin-top:14px;padding:12px 16px;background:var(--surface-2);border-radius:var(--radius-sm);font-size:0.84rem;color:var(--text-muted);">
-            <p><strong>SpaceCraft scores:</strong> Resourcefulness 7 &middot; Usefulness 8 &middot; Craft 7 &middot; Total 22/30</p>
+            <p><strong>Our analysis:</strong> Resourcefulness 7 &middot; Usefulness 8 &middot; Craft 7 &middot; Total 22/30</p>
             <p style="margin-top:6px;"><strong>Why:</strong> Resourcefulness is 7 (not 10) because it uses a standard OCR pipeline without special optimization tricks. Usefulness is 8 because OCR is genuinely useful and it works reliably. Craft is 7 — the interface is clean and focused, but it doesn't go beyond Gradio defaults. It's a good Space because it does one thing well, not because any single dimension is exceptional.</p>
             <p style="margin-top:6px;">How close were your scores? If you scored it higher or lower, think about why. What would have to be different for you to give it a 10 in Craft?</p>
         </div>
     </div>
 
     <h2>Keep Going</h2>
-    <p>The <a href="index.html">SpaceCraft leaderboard</a> has 20 Spaces to start with. But there are thousands more CPU-only Spaces on Hugging Face worth discovering. Use the strategies in this chapter, study what works, and build something of your own.</p>
+    <p>The <a href="index.html">SpaceCraft leaderboard</a> has 10 Spaces to start with. But there are thousands more CPU-only Spaces on Hugging Face worth discovering. Use the strategies in this chapter, study what works, and build something of your own.</p>
     <p>You've read the core guide. Continue to <a href="pipelines.html">Chapter 7</a> for multi-model pipelines, <a href="design.html">Chapter 8</a> for UX design, or <a href="hf-api.html">Chapter 9</a> for using HF beyond Spaces. Or browse the <a href="methods.html">Research Methods Gallery</a> and <a href="guides.html">Build Guides</a>.</p>
 </div>
 

@@ -256,9 +256,9 @@ except Exception as e:
     <h2>Pipeline Patterns on the Leaderboard</h2>
     <p>Several Spaces on the <a href="index.html">SpaceCraft leaderboard</a> use pipeline-like architectures:</p>
     <ul>
-        <li><strong>OPUS Translate</strong> &mdash; Could be step 1 in a translate-then-classify pipeline</li>
-        <li><strong>Pathfinder</strong> &mdash; Retrieves papers (step 1), then ranks them by relevance (step 2)</li>
-        <li><strong>CLIP Interrogator</strong> &mdash; Analyzes image embeddings (step 1), then generates text descriptions (step 2)</li>
+        <li><strong>GLiNER HandyLab</strong> &mdash; Runs entity extraction (step 1), then uses those entities for downstream QA and summarization (step 2)</li>
+        <li><strong>Summarize Long Text</strong> &mdash; Chunks long documents (step 1), then summarizes each chunk and combines (step 2)</li>
+        <li><strong>Face Swap</strong> &mdash; Detects faces (step 1), then applies the swap transformation (step 2)</li>
     </ul>
 
     <h2>When to Use a Pipeline vs. a Single Model</h2>

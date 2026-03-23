@@ -82,14 +82,14 @@
 
     <h2>See It on SpaceCraft</h2>
     <p>
-        <a href="https://huggingface.co/spaces/Helsinki-NLP/opus-translate" class="space-link" target="_blank">OPUS Translate</a>
+        <a href="https://huggingface.co/spaces/pszemraj/summarize-long-text" class="space-link" target="_blank">Summarize Long Text</a>
     </p>
-    <p><strong>What to try:</strong> OPUS uses specialized models for each language pair. Try translating formal text, then slang, then poetry. Where does the translation degrade? Slang and poetry are "away domains" for models trained on formal parallel text. The gap reveals what the training data emphasized.</p>
+    <p><strong>What to try:</strong> Summarize Long Text was likely trained on news articles and academic papers. Try summarizing a news story (home domain), then try song lyrics, legal contracts, or a Reddit thread full of slang. Where does the summary degrade? Informal or highly structured text is an "away domain" for models trained on standard prose. The gap reveals what the training data emphasized.</p>
     <p>
-        <a href="https://huggingface.co/spaces/prithivMLmods/CORE-OCR" class="space-link" target="_blank">core OCR</a>
-        <a href="https://huggingface.co/spaces/lightonai/LightOnOCR-2-1B-Demo" class="space-link" target="_blank">LightOnOCR</a>
+        <a href="https://huggingface.co/spaces/PaddlePaddle/PP-OCRv5_Online_Demo" class="space-link" target="_blank">PP-OCRv5</a>
+        <a href="https://huggingface.co/spaces/felixrosberg/face-swap" class="space-link" target="_blank">Face Swap</a>
     </p>
-    <p><strong>What to try:</strong> Upload a clean, printed document (home domain). Then upload a photo of a handwritten note, a screenshot with unusual fonts, or a document in a non-Latin script. The performance gap between clean and messy input is domain shift in action.</p>
+    <p><strong>What to try:</strong> Upload a clean, well-lit photo to each Space (home domain). Then try challenging inputs: for PP-OCRv5, a blurry handwritten note or a document in a non-Latin script. For Face Swap, a low-resolution image, a side profile, or a face partly covered by sunglasses. The performance gap between clean and messy input is domain shift in action.</p>
 
     <h2>What You'll Discover</h2>
     <p>The key insight is that <strong>domain shift reveals what a model actually learned vs. what it memorized</strong>. A model that fails completely outside its training domain learned surface patterns specific to that data. A model that degrades gracefully learned something more general. On the <a href="../index.html">SpaceCraft leaderboard</a>, the Spaces tagged with "small specialized model" are the ones most vulnerable to domain shift — their specialization is both their strength (fast, focused) and their weakness (narrow).</p>

@@ -111,13 +111,13 @@
 
     <h2>See It on SpaceCraft</h2>
     <p>
-        <a href="https://huggingface.co/spaces/fffiloni/CLIP-Interrogator-2" class="space-link" target="_blank">CLIP Interrogator</a>
+        <a href="https://huggingface.co/spaces/knowledgator/GLiNER_HandyLab" class="space-link" target="_blank">GLiNER HandyLab</a>
     </p>
-    <p><strong>What to try:</strong> CLIP Interrogator chains image embedding extraction with text generation to describe an image. Upload a clear, well-lit photo — then upload something ambiguous: a blurry image, an abstract painting, a photo with misleading context. How does the quality of the generated description change? When the image embedding step struggles, the text generation step inherits that confusion.</p>
+    <p><strong>What to try:</strong> GLiNER extracts named entities from text using labels you define. Imagine chaining it into a pipeline: first extract entities, then feed those entities into another system for analysis. Give it clean, well-structured text with obvious entities — then give it messy input: a sentence with typos, ambiguous names, or slang. When the entity extraction step misidentifies or misses entities, every downstream step that depends on those entities inherits the error.</p>
     <p>
-        <a href="https://huggingface.co/spaces/kiyer/pathfinder" class="space-link" target="_blank">Pathfinder</a>
+        <a href="https://huggingface.co/spaces/felixrosberg/face-swap" class="space-link" target="_blank">Face Swap</a>
     </p>
-    <p><strong>What to try:</strong> Pathfinder retrieves scientific papers by converting your query into an embedding, then finding similar embeddings in its database. Try a clear, specific query ("transformer attention mechanisms") and then a vague or misleading one ("things that are kind of related to that one paper"). When the query embedding is poor, the retrieval results degrade — but they still look like confident results. The pipeline doesn't tell you it's uncertain.</p>
+    <p><strong>What to try:</strong> Face Swap chains face detection with face replacement — a natural two-step pipeline. Upload a clear, front-facing portrait and the swap works cleanly. Then try a group photo, a side profile, or a face partly occluded by a hand. When the face detection step struggles, the replacement step produces artifacts or fails entirely. The pipeline doesn't warn you that step one was uncertain — it just passes bad data forward.</p>
 
     <h2>What You'll Discover</h2>
     <p>The key insight is that <strong>a pipeline is only as reliable as its weakest link, and the weakest link is usually the connection between steps, not the steps themselves</strong>. Each model in a chain may work perfectly on clean input. The failure happens at the handoff — where one model's output becomes the next model's input without any validation. The fix isn't better models. The fix is <strong>checking the intermediate results</strong> and building in validation between steps, as covered in <a href="../pipelines.html">Chapter 7</a>.</p>
