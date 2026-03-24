@@ -65,7 +65,7 @@
     <p class="subtitle">AI systems either sort inputs into categories or create new content. Knowing which is which changes everything.</p>
 
     <h2>What It Is</h2>
-    <p>This isn't a testing method like the others — it's a <strong>fundamental distinction</strong> you need to understand before you can evaluate any AI system. Every model you encounter on Hugging Face does one of two things: it <em>classifies</em> (sorts input into predefined categories) or it <em>generates</em> (creates new content from a prompt). They learn differently, fail differently, and require different training data.</p>
+    <p>This isn't a testing method like the others — it's a <strong>fundamental distinction</strong> you need to understand before you can evaluate any AI system. Every model you encounter on Hugging Face does one of two things: it <em>classifies</em> (sorts input into predefined categories) or it <em>generates</em> (creates new content from its input). They learn differently, fail differently, and require different training data.</p>
     <p>Understanding this fork is what separates someone who uses AI tools from someone who understands them.</p>
 
     <h2>When You Use It</h2>
@@ -74,7 +74,7 @@
     <div class="comparison">
         <div class="comparison-box">
             <h4>Classification</h4>
-            <p><strong>Input:</strong> Text, image, audio</p>
+            <p><strong>Input:</strong> Text, image, audio, or any combination</p>
             <p><strong>Output:</strong> A label from a fixed set</p>
             <p><strong>Training:</strong> Needs labeled examples</p>
             <p><strong>Fails by:</strong> Picking the wrong label</p>
@@ -82,10 +82,10 @@
         </div>
         <div class="comparison-box">
             <h4>Generation</h4>
-            <p><strong>Input:</strong> A prompt or starting text</p>
+            <p><strong>Input:</strong> Text, image, audio, or any combination</p>
             <p><strong>Output:</strong> New content (text, audio, images)</p>
             <p><strong>Training:</strong> Needs lots of raw data (no labels)</p>
-            <p><strong>Fails by:</strong> Writing something wrong or nonsensical</p>
+            <p><strong>Fails by:</strong> Producing something wrong, nonsensical, or distorted</p>
             <p><strong>Example:</strong> "Once upon a time, a robot learned to paint..."</p>
         </div>
     </div>
@@ -95,7 +95,7 @@
         <li><strong>Identify which type each Space is.</strong> Look at the output. Does it give you a label/score (classifier) or new content (generator)?</li>
         <li><strong>Test a classifier and a generator on the same input.</strong> Give them identical text. The classifier gives you a label. The generator writes something new. Notice what each one tells you that the other can't.</li>
         <li><strong>Try an adversarial input on both.</strong> How does each type fail? The classifier picks a wrong label. The generator writes something that sounds plausible but is wrong in a different way.</li>
-        <li><strong>Read the model cards.</strong> Compare training data. Classifiers need expensive labeled datasets. Generators need massive amounts of raw text. This difference in requirements is why generation scaled first — the whole internet is raw text, but labeled data is scarce.</li>
+        <li><strong>Read the model cards.</strong> Compare training data. Classifiers need expensive labeled datasets. Generators need massive amounts of raw, unlabeled data — text, images, audio. This difference in requirements is why generation scaled first — the internet is full of unlabeled data, but labeled data is scarce.</li>
         <li><strong>Ask the big question:</strong> Which type is more useful for your project? Sometimes you need a definitive answer (classification). Sometimes you need creative output (generation). Sometimes you need both in a <a href="../pipelines.html">pipeline</a>.</li>
     </ol>
 
@@ -117,7 +117,7 @@
     <p><strong>What to try:</strong> Give the same sentence to GLiNER (classifier) and Qwen3 (generator). One sorts it into categories. The other uses it as a springboard to write something new. Same input, fundamentally different operations. Which one tells you more about what the sentence <em>means</em>? Which one is more useful for building on the sentence?</p>
 
     <h2>What You'll Discover</h2>
-    <p>The key insight is that <strong>classification and generation need different training data</strong>, and that difference explains the entire history of modern AI. Classifiers need humans to label thousands of examples ("this email is spam," "this review is positive"). That's expensive and slow. Generators need raw text — and the internet has essentially unlimited raw text. That's why generation scaled to ChatGPT and Claude while classification stayed focused on narrow tasks. The training data bottleneck was the fork in the road.</p>
+    <p>The key insight is that <strong>classification and generation need different training data</strong>, and that difference explains the entire history of modern AI. Classifiers need humans to label thousands of examples ("this email is spam," "this review is positive"). That's expensive and slow. Generators need raw, unlabeled data — text, images, audio — and the internet has essentially unlimited amounts of all three. That's why generation scaled to ChatGPT, Claude, and DALL-E while classification stayed focused on narrow tasks. The training data bottleneck was the fork in the road.</p>
 
     <div class="callout">
         <p><strong>Try it yourself:</strong> Browse the <a href="../index.html">SpaceCraft leaderboard</a> and sort each Space into "classifier" or "generator." Some won't fit neatly — data visualization Spaces are neither, and pipeline Spaces may chain both. That ambiguity is itself a useful observation.</p>
