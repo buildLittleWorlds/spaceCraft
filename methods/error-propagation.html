@@ -81,7 +81,7 @@
                 <span class="arrow">&rarr;</span>
                 <span class="step">Caption text</span>
                 <span class="arrow">&rarr;</span>
-                <span class="step">Sentiment model</span>
+                <span class="step">Emotion model</span>
                 <span class="arrow">&rarr;</span>
                 <span class="step">Mood label</span>
             </div>
@@ -123,7 +123,7 @@
     <p>The key insight is that <strong>a pipeline is only as reliable as its weakest link, and the weakest link is usually the connection between steps, not the steps themselves</strong>. Each model in a chain may work perfectly on clean input. The failure happens at the handoff — where one model's output becomes the next model's input without any validation. The fix isn't better models. The fix is <strong>checking the intermediate results</strong> and building in validation between steps, as covered in <a href="../pipelines.html">Chapter 7</a>.</p>
 
     <div class="callout">
-        <p><strong>Try it yourself:</strong> Think of any two Spaces on the <a href="../index.html">leaderboard</a> whose outputs and inputs could connect — for example, an OCR Space that produces text, followed by a sentiment analysis Space that reads text. Mentally chain them: what would happen if the OCR output was garbled? Would the sentiment classifier know? Write down where you'd add a validation check between the two steps.</p>
+        <p><strong>Try it yourself:</strong> Think of any two Spaces on the <a href="../index.html">leaderboard</a> whose outputs and inputs could connect — for example, an OCR Space that produces text, followed by a classification Space that reads text. Mentally chain them: what would happen if the OCR output was garbled? Would the classifier know? Write down where you'd add a validation check between the two steps.</p>
     </div>
 </div>
 

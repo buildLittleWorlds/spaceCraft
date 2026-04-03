@@ -126,7 +126,7 @@ print(response.json())
     <div class="code-block">from huggingface_hub import HfApi
 api = HfApi()
 
-# Find the most-downloaded sentiment models
+# Find the most-downloaded text classification models
 models = api.list_models(
     task="text-classification",
     sort="downloads",

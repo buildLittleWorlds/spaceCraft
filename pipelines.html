@@ -178,10 +178,10 @@ def caption_image(image_path):
         return result[0].get("generated_text", "")
     return ""
 
-def classify_sentiment(text):
-    """Step 2: Classify the caption's sentiment."""
+def classify_emotion(text):
+    """Step 2: Classify the caption's emotion."""
     response = requests.post(
-        "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english",
+        "https://api-inference.huggingface.co/models/j-hartmann/emotion-english-distilroberta-base",
         headers=headers,
         json={"inputs": text}
     )
@@ -195,7 +195,7 @@ def image_mood(image):
     caption = caption_image(image)
     if not caption:
         return "Could not generate a caption.", ""
-    mood = classify_sentiment(caption)
+    mood = classify_emotion(caption)
     return caption, mood
 
 demo = gr.Interface(
@@ -206,8 +206,8 @@ demo = gr.Interface(
         gr.Textbox(label="Mood (Step 2)")
     ],
     title="Image Mood Pipeline",
-    description="Captions the image (BLIP), then classifies "
-                "the caption's sentiment (DistilBERT). Both via API."
+    description="Captions the image (BLIP), then detects "
+                "the caption's emotion. Both via API."
 )
 demo.launch()</div>
 
@@ -217,7 +217,7 @@ demo.launch()</div>
     <p>Here's the thing about pipelines: <strong>errors propagate</strong>. If Step 1 produces bad output, Step 2 processes bad input. The final result is wrong, and it's not obvious where the error started.</p>
 
     <div class="callout callout-orange">
-        <p><strong>Example:</strong> If the image captioning model says "a cat sitting on a chair" but the image is actually a dog, the sentiment classifier will correctly classify the caption's sentiment — but the whole result is wrong, because the caption was wrong. The classifier has no way to know the caption was bad. It just processes what it gets.</p>
+        <p><strong>Example:</strong> If the image captioning model says "a cat sitting on a chair" but the image is actually a dog, the emotion classifier will correctly classify the caption's emotion — but the whole result is wrong, because the caption was wrong. The classifier has no way to know the caption was bad. It just processes what it gets.</p>
     </div>
 
     <p>This is why pipelines are harder to debug than single-step tools. When something goes wrong, you need to check each step independently:</p>
@@ -240,7 +240,7 @@ if not caption or len(caption) < 5:
     return "Caption too short or empty — skipping analysis.", ""
 
 # Only proceed to Step 2 if Step 1 succeeded
-mood = classify_sentiment(caption)</div>
+mood = classify_emotion(caption)</div>
 
     <h3>Wrap Each Step in Error Handling</h3>
     <div class="code-block">try:
@@ -249,7 +249,7 @@ except Exception as e:
     return f"Step 1 failed: {e}", ""
 
 try:
-    mood = classify_sentiment(caption)
+    mood = classify_emotion(caption)
 except Exception as e:
     return caption, f"Step 2 failed: {e}"</div>
 
@@ -264,7 +264,7 @@ except Exception as e:
     <h2>When to Use a Pipeline vs. a Single Model</h2>
     <ul>
         <li><strong>Use a single model</strong> when one model does the whole job well enough. Simpler is better.</li>
-        <li><strong>Use a pipeline</strong> when no single model does what you need, but two models combined can. For example: no model translates AND classifies sentiment, but you can chain a translator and a classifier.</li>
+        <li><strong>Use a pipeline</strong> when no single model does what you need, but two models combined can. For example: no model translates AND classifies emotion, but you can chain a translator and a classifier.</li>
         <li><strong>Use an API pipeline</strong> when the models you need are too large for CPU. Let the HF Inference API run them remotely and chain the results in your Space.</li>
     </ul>
 
